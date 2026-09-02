@@ -14,19 +14,19 @@ export function Hero() {
       transition={{ duration: 0.55, ease: "easeOut" }}
     >
       <Image
-        src="/placeholder-avatar.svg"
+        src="/avatar-home.png"
         alt="Placeholder portrait of Pardheev"
         width={128}
         height={128}
         priority
         unoptimized
-        className="ring-border size-28 rounded-full ring-1 sm:size-32"
+        className="size-28 rounded-full ring-1 ring-border sm:size-32"
       />
       <div className="space-y-2">
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           Hi, I&apos;m Pardheev
         </h1>
-        <p className="text-muted-foreground text-lg">{site.role}</p>
+        <p className="text-lg text-muted-foreground">{site.role}</p>
       </div>
     </motion.section>
   );

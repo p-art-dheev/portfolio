@@ -7,9 +7,9 @@ export const site = {
   college: "Placeholder University · Computer Science",
   status: "online" as const,
   socials: {
-    linkedin: "https://linkedin.com/in/your-handle",
-    github: "https://github.com/your-handle",
-    email: "mailto:hello@pardheev.dev",
+    linkedin: "https://linkedin.com/in/pardheev-vatturu/",
+    github: "https://github.com/p-art-dheev",
+    email: "pardheev.vatturu1234@gmail.com",
   },
 } as const;
 
