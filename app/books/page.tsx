@@ -1,18 +1,12 @@
-import {
-  PlaceholderPage,
-  placeholderMetadata,
-} from "@/components/PlaceholderPage";
+import type { Metadata } from "next";
 
-export const metadata = placeholderMetadata(
-  "Books",
-  "Reading list and notes. Content coming soon.",
-);
+import { BooksPage } from "@/components/BooksPage";
 
-export default function BooksPage() {
-  return (
-    <PlaceholderPage
-      title="Books"
-      description="A books shelf will live here. This route exists so the More menu has somewhere to go."
-    />
-  );
+export const metadata: Metadata = {
+  title: "Books",
+  description: "Books I have been reading and returning to.",
+};
+
+export default function BooksRoute() {
+  return <BooksPage />;
 }
