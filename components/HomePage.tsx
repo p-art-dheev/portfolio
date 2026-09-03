@@ -67,7 +67,7 @@ export function HomePage() {
         <h2 className="text-lg font-medium tracking-tight">
           Featured projects
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2">
           {featuredProjects.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}

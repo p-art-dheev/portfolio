@@ -56,37 +56,57 @@ export const techStack: TechItem[] = [
   { label: "Python", icon: "terminal" },
 ];
 
+export type ProjectStatus = "off" | "live" | "Building";
+
 export type Project = {
   slug: string;
   title: string;
   description: string;
+  banner?: string;
   tags: string[];
   href: string;
+  status: ProjectStatus;
 };
 
 export const featuredProjects: Project[] = [
   {
     slug: "project-one",
-    title: "Project One",
+    title: "Electricity Load Forecasting",
     description:
       "A placeholder product that solves an interesting problem. Replace this with a real case study later.",
-    tags: ["Next.js", "TypeScript", "PostgreSQL"],
+    banner: "/projects/project-one/banner.png",
+    tags: ["Python", "LSTM", "Time Series Analysis"],
     href: "/projects",
+    status: "live",
   },
   {
     slug: "project-two",
-    title: "Project Two",
+    title: "Abstract Based Semtiment Analysis",
     description:
       "Another featured build with a short summary of the outcome and the stack behind it.",
-    tags: ["React", "Node.js", "Tailwind"],
+    banner: "/projects/project-two/banner.png",
+    tags: ["BERT", "Transformers", "NLP"],
     href: "/projects",
+    status: "Building",
   },
   {
     slug: "project-three",
-    title: "Project Three",
+    title: "Codeproctor",
     description:
       "A third card so the grid looks complete. Wire this up to real project data when it's ready.",
-    tags: ["Python", "APIs", "Design"],
+    banner: "/projects/project-three/1.png",
+    tags: ["Next.js", "TypeScript", "PostgreSQL"],
     href: "/projects",
+    status: "off",
+  },
+  {
+    slug: "project-four",
+    title: "Meal Nutrition Optimizer",
+    description:
+      "A third card so the grid looks complete. Wire this up to real project data when it's ready.",
+    banner: "/projects/project-four/banner.png",
+    tags: ["Python", "FastAPI", "React", "PuLP"],
+    href: "/projects",
+    status: "Building",
   },
 ];
