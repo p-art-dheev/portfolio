@@ -14,7 +14,7 @@ export function Hero() {
       transition={{ duration: 0.55, ease: "easeOut" }}
     >
       <Image
-        src="/avatar-home.png"
+        src="/avatars/avatar-default.png"
         alt="Placeholder portrait of Pardheev"
         width={128}
         height={128}
