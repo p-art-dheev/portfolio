@@ -4,7 +4,7 @@ import { FeaturedProjects } from "@/components/FeaturedProjects";
 import { Hero } from "@/components/Hero";
 import { AboutSection, EducationSection } from "@/components/HomeSections";
 import { TechStackGrid } from "@/components/TechStackGrid";
-import GithubHeatmap from "@/components/GithubHeatmap";
+import { GithubHeatmap } from "@/components/GitHubActivitySection";
 
 export function HomePage() {
   return (
