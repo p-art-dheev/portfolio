@@ -4,9 +4,16 @@ export const site = {
   role: "Full-Stack Developer",
   tagline: "Building thoughtful products from idea to interface.",
   bio: "I'm a full-stack developer who enjoys turning messy problems into clean, reliable software. This paragraph is placeholder copy — swap it for a real bio when you're ready.",
-  college: "Placeholder University · Computer Science",
+  college: "Amrita Vishwa Vidyapeetham",
+  branch: "Artificial Intelligence Engineering",
+  year: "2023-2027",
+  location: "Coimbatore, India",
   status: "online" as const,
   resume: "/resume/resume.pdf",
+  avatars: [
+    "/avatars/avatar-default.png",
+    "/avatars/avatar.jpg",
+  ] as const,
   socials: {
     linkedin: "https://linkedin.com/in/pardheev-vatturu/",
     github: "https://github.com/p-art-dheev",
