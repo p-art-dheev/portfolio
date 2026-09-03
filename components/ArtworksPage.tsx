@@ -1,0 +1,15 @@
+"use client";
+
+import { ProjectPinUpField } from "@/components/ProjectPinUpField";
+import { artworks } from "@/lib/artworks";
+
+export function ArtworksPage() {
+  return (
+    <div className="relative h-[calc(100dvh-3.5rem)] w-full overflow-hidden">
+      <ProjectPinUpField items={artworks} />
+      <p className="pointer-events-none absolute bottom-4 left-4 z-[60] text-xs text-white/45">
+        Drag to pan · Scroll to zoom · Double-click a piece to focus
+      </p>
+    </div>
+  );
+}

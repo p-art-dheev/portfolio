@@ -1,18 +1,12 @@
-import {
-  PlaceholderPage,
-  placeholderMetadata,
-} from "@/components/PlaceholderPage";
+import type { Metadata } from "next";
 
-export const metadata = placeholderMetadata(
-  "Artworks",
-  "Art and visual work. Content coming soon.",
-);
+import { ArtworksPage } from "@/components/ArtworksPage";
 
-export default function ArtworksPage() {
-  return (
-    <PlaceholderPage
-      title="Artworks"
-      description="Artwork will be collected here. This is a placeholder page for the More menu."
-    />
-  );
+export const metadata: Metadata = {
+  title: "Artworks",
+  description: "Drawings and paintings on a pin-up board.",
+};
+
+export default function ArtworksRoute() {
+  return <ArtworksPage />;
 }
