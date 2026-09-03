@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { motion } from "motion/react";
 
 import type { Project, ProjectStatus } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
@@ -87,7 +88,12 @@ function ProjectBanner({ project }: { project: Project }) {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Card className="h-full">
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="h-full"
+    >
+      <Card className="h-full transition-shadow hover:shadow-md">
       <div className="px-(--card-spacing)">
         <ProjectBanner project={project} />
       </div>
@@ -108,12 +114,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
         <Link
           href={project.href}
-          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium hover:underline"
+          className="group/link inline-flex shrink-0 items-center gap-1 text-sm font-medium hover:underline"
         >
           View project
-          <ArrowUpRight className="size-3.5" />
+          <ArrowUpRight className="size-3.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
         </Link>
       </CardContent>
-    </Card>
+      </Card>
+    </motion.div>
   );
 }

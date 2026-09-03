@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 
 import { techStack } from "@/lib/data";
 import { techIconMap } from "@/lib/tech-stack-icons";
+import { defaultTransition, defaultViewport, fadeInUp } from "@/lib/motion";
 
 const listVariants = {
   hidden: {},
@@ -20,7 +21,16 @@ const itemVariants = {
 export function TechStackGrid() {
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-medium tracking-tight">Tech stack</h2>
+      <motion.h2
+        className="text-lg font-medium tracking-tight"
+        variants={fadeInUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={defaultViewport}
+        transition={defaultTransition}
+      >
+        Tech stack
+      </motion.h2>
       <motion.ul
         className="flex flex-wrap gap-2"
         variants={listVariants}
@@ -35,6 +45,8 @@ export function TechStackGrid() {
             <motion.li
               key={item.label}
               variants={itemVariants}
+              whileHover={{ scale: 1.04, y: -2 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
               className="border-border bg-card inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm"
             >
               <Icon

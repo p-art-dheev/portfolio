@@ -67,7 +67,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 className={cn(
-                  "text-muted-foreground",
+                  "text-muted-foreground cursor-pointer",
                   moreActive && "text-foreground font-medium",
                 )}
               >
