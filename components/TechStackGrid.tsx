@@ -1,30 +1,9 @@
 "use client";
 
-import {
-  Code2,
-  Component,
-  Database,
-  GitBranch,
-  Layers,
-  Server,
-  SquareTerminal,
-  Wind,
-  type LucideIcon,
-} from "lucide-react";
 import { motion } from "motion/react";
 
-import { techStack, type TechItem } from "@/lib/data";
-
-const icons: Record<TechItem["icon"], LucideIcon> = {
-  code: Code2,
-  component: Component,
-  wind: Wind,
-  server: Server,
-  database: Database,
-  git: GitBranch,
-  terminal: SquareTerminal,
-  layers: Layers,
-};
+import { techStack } from "@/lib/data";
+import { techIconMap } from "@/lib/tech-stack-icons";
 
 const listVariants = {
   hidden: {},
@@ -50,14 +29,19 @@ export function TechStackGrid() {
         viewport={{ once: true, amount: 0.35 }}
       >
         {techStack.map((item) => {
-          const Icon = icons[item.icon];
+          const { Icon, color, adaptive } = techIconMap[item.icon];
+
           return (
             <motion.li
               key={item.label}
               variants={itemVariants}
               className="border-border bg-card inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm"
             >
-              <Icon className="text-muted-foreground size-3.5" aria-hidden />
+              <Icon
+                className={adaptive ? "size-3.5 text-foreground" : "size-3.5"}
+                style={adaptive ? undefined : { color }}
+                aria-hidden
+              />
               {item.label}
             </motion.li>
           );

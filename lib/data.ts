@@ -3,9 +3,9 @@ export const site = {
   domain: "pardheev.dev",
   role: "Full-Stack Developer",
   tagline: "Building thoughtful products from idea to interface.",
-  bio: "I'm a full-stack developer who enjoys turning messy problems into clean, reliable software. This paragraph is placeholder copy — swap it for a real bio when you're ready.",
+  bio: "Hey, I’m Pardheev, a final-year student and developer who likes turning ideas into things that actually work. I’m focused on full-stack development, Artificial Intelligence, and Machine Learning, building everything from polished web applications to data-driven and intelligent systems. I enjoy working across the stack from crafting clean interfaces and scalable backends to designing databases and experimenting with ML models. I’m curious by nature and constantly learning through the things I build. Whether it’s solving a complex problem, exploring a new technology, or turning a rough idea into a working product, I enjoy the process of figuring things out and making them better.",
   college: "Amrita Vishwa Vidyapeetham",
-  branch: "Artificial Intelligence Engineering",
+  branch: "B.Tech Artificial Intelligence Engineering",
   year: "2023-2027",
   location: "Coimbatore, India",
   status: "online" as const,
@@ -32,28 +32,28 @@ export const moreLinks = [
   { href: "/artworks", label: "Artworks" },
 ] as const;
 
+import type { TechIconKey } from "@/lib/tech-stack-icons";
+
 export type TechItem = {
   label: string;
-  icon:
-    | "code"
-    | "component"
-    | "wind"
-    | "server"
-    | "database"
-    | "git"
-    | "terminal"
-    | "layers";
+  icon: TechIconKey;
 };
 
 export const techStack: TechItem[] = [
-  { label: "TypeScript", icon: "code" },
-  { label: "Next.js", icon: "layers" },
-  { label: "React", icon: "component" },
-  { label: "Tailwind CSS", icon: "wind" },
-  { label: "Node.js", icon: "server" },
-  { label: "PostgreSQL", icon: "database" },
+  { label: "TypeScript", icon: "typescript" },
+  { label: "Next.js", icon: "nextjs" },
+  { label: "React", icon: "react" },
+  { label: "Tailwind CSS", icon: "tailwindcss" },
+  { label: "Node.js", icon: "nodejs" },
+  { label: "PostgreSQL", icon: "postgresql" },
   { label: "Git", icon: "git" },
-  { label: "Python", icon: "terminal" },
+  { label: "GitHub", icon: "github" },
+  { label: "Python", icon: "python" },
+  { label: "HTML", icon: "html" },
+  { label: "CSS", icon: "css" },
+  { label: "JavaScript", icon: "javascript" },
+  { label: "NumPy", icon: "numpy" },
+  { label: "pandas", icon: "pandas" },
 ];
 
 export type ProjectStatus = "off" | "live" | "Building";

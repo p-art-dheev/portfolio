@@ -5,7 +5,7 @@ import { Container } from "@/components/Container";
 import { Hero } from "@/components/Hero";
 import { Github, Linkedin } from "@/components/icons";
 import { ProjectCard } from "@/components/ProjectCard";
-import { StatusCard } from "@/components/StatusCard";
+import { EducationCard } from "@/components/EducationCard";
 import { TechStackGrid } from "@/components/TechStackGrid";
 import { Button } from "@/components/ui/button";
 import GithubHeatmap from "@/components/GithubHeatmap";
@@ -20,25 +20,26 @@ export function HomePage() {
   return (
     <Container as="div" className="flex flex-col gap-16 py-12 sm:py-16">
       <Hero />
-      <StatusCard />
+      <section className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
+        <EducationCard />
+        <div className="flex flex-col gap-3 sm:items-end">
+          <Button className="w-full sm:w-36" asChild>
+            <a href={site.resume} target="_blank" rel="noreferrer">
+              Read Resume
+            </a>
+          </Button>
+          <Button type="button" variant="outline" className="w-full sm:w-36">
+            Contact
+          </Button>
+        </div>
+      </section>
 
       <section className="space-y-3">
         <h2 className="text-lg font-medium tracking-tight">About</h2>
-        <p className="text-muted-foreground max-w-2xl leading-7 text-pretty">
+        <p className="text-muted-foreground w-full leading-7 text-justify">
           {site.bio}
         </p>
         <p className="text-sm font-medium">{site.tagline}</p>
-      </section>
-
-      <section className="flex flex-wrap gap-3">
-        <Button size="lg" asChild>
-          <a href={site.resume} target="_blank" rel="noreferrer">
-            Read Resume
-          </a>
-        </Button>
-        <Button type="button" size="lg" variant="outline">
-          Contact
-        </Button>
       </section>
 
       <section className="space-y-3">
