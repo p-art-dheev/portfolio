@@ -8,6 +8,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { StatusCard } from "@/components/StatusCard";
 import { TechStackGrid } from "@/components/TechStackGrid";
 import { Button } from "@/components/ui/button";
+import GithubHeatmap from "@/components/GithubHeatmap";
 
 const socials = [
   { href: site.socials.linkedin, label: "LinkedIn", icon: Linkedin },
@@ -30,8 +31,10 @@ export function HomePage() {
       </section>
 
       <section className="flex flex-wrap gap-3">
-        <Button type="button" size="lg">
-          Read Resume
+        <Button size="lg" asChild>
+          <a href={site.resume} target="_blank" rel="noreferrer">
+            Read Resume
+          </a>
         </Button>
         <Button type="button" size="lg" variant="outline">
           Contact
@@ -58,12 +61,7 @@ export function HomePage() {
 
       <TechStackGrid />
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium tracking-tight">GitHub heatmap</h2>
-        <div className="border-border bg-muted/30 text-muted-foreground flex min-h-40 items-center justify-center rounded-xl border border-dashed px-4 text-center text-sm">
-          Contribution graph placeholder — connect GitHub data later.
-        </div>
-      </section>
+      <GithubHeatmap />
 
       <section className="space-y-4">
         <h2 className="text-lg font-medium tracking-tight">

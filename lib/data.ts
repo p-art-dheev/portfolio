@@ -6,6 +6,7 @@ export const site = {
   bio: "I'm a full-stack developer who enjoys turning messy problems into clean, reliable software. This paragraph is placeholder copy — swap it for a real bio when you're ready.",
   college: "Placeholder University · Computer Science",
   status: "online" as const,
+  resume: "/resume/resume.pdf",
   socials: {
     linkedin: "https://linkedin.com/in/pardheev-vatturu/",
     github: "https://github.com/p-art-dheev",
