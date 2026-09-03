@@ -1,18 +1,12 @@
-import {
-  PlaceholderPage,
-  placeholderMetadata,
-} from "@/components/PlaceholderPage";
+import type { Metadata } from "next";
 
-export const metadata = placeholderMetadata(
-  "Projects",
-  "Selected work and case studies. Content coming soon.",
-);
+import { ProjectsPage } from "@/components/ProjectsPage";
 
-export default function ProjectsPage() {
-  return (
-    <PlaceholderPage
-      title="Projects"
-      description="A full project index will live here. Featured work is already sketched on the home page."
-    />
-  );
+export const metadata: Metadata = {
+  title: "Projects",
+  description: "Selected work across full-stack apps, NLP, and applied ML.",
+};
+
+export default function ProjectsRoute() {
+  return <ProjectsPage />;
 }
