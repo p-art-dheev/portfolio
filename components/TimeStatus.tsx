@@ -9,7 +9,6 @@ const clockFormatter = new Intl.DateTimeFormat(undefined, {
   weekday: "short",
   hour: "numeric",
   minute: "2-digit",
-  second: "2-digit",
 });
 
 type TimeStatusProps = {
@@ -21,7 +20,7 @@ export function TimeStatus({ className }: TimeStatusProps) {
 
   useEffect(() => {
     setNow(new Date());
-    const id = window.setInterval(() => setNow(new Date()), 1000);
+    const id = window.setInterval(() => setNow(new Date()), 30_000);
     return () => window.clearInterval(id);
   }, []);
 
@@ -42,7 +41,7 @@ export function TimeStatus({ className }: TimeStatusProps) {
       <div className="text-muted-foreground flex items-center gap-2">
         <time
           dateTime={now?.toISOString()}
-          className="font-mono tabular-nums"
+          className="font-mono min-w-[9ch] tabular-nums"
           suppressHydrationWarning
         >
           {now ? clockFormatter.format(now) : "—"}

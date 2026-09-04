@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { motion } from "motion/react";
 
 import type { Project, ProjectStatus } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
@@ -79,7 +78,8 @@ function ProjectBanner({ project }: { project: Project }) {
       alt={`${project.title} banner`}
       width={640}
       height={360}
-      unoptimized
+      quality={75}
+      sizes="(min-width: 640px) 40vw, 90vw"
       onError={() => setHasError(true)}
       className="aspect-video w-full rounded-xl object-cover"
     />
@@ -88,11 +88,7 @@ function ProjectBanner({ project }: { project: Project }) {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className="h-full"
-    >
+    <div className="h-full transition-transform hover:-translate-y-1">
       <Card className="h-full transition-shadow hover:shadow-md">
       <div className="px-(--card-spacing)">
         <ProjectBanner project={project} />
@@ -121,6 +117,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </Link>
       </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

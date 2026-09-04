@@ -4,7 +4,7 @@ import { FeaturedProjects } from "@/components/FeaturedProjects";
 import { Hero } from "@/components/Hero";
 import { AboutSection, EducationSection } from "@/components/HomeSections";
 import { TechStackGrid } from "@/components/TechStackGrid";
-import { GithubHeatmap } from "@/components/GitHubActivitySection";
+import { GithubHeatmapLazy } from "@/components/GithubHeatmapLazy";
 
 export function HomePage() {
   return (
@@ -14,7 +14,7 @@ export function HomePage() {
       <AboutSection />
       <ConnectSection />
       <TechStackGrid />
-      <GithubHeatmap />
+      <GithubHeatmapLazy />
       <FeaturedProjects />
     </Container>
   );

@@ -1,16 +1,6 @@
-"use client";
-
-import { motion } from "motion/react";
-
 import { Container } from "@/components/Container";
 import { ProjectCard } from "@/components/ProjectCard";
 import { featuredProjects } from "@/lib/data";
-import {
-  defaultTransition,
-  defaultViewport,
-  fadeInUp,
-  staggerContainer,
-} from "@/lib/motion";
 
 export function ProjectsPage() {
   return (
@@ -19,23 +9,11 @@ export function ProjectsPage() {
       <p className="text-muted-foreground mt-3 max-w-xl">
         Selected work across full-stack apps, NLP, and applied ML.
       </p>
-      <motion.div
-        className="mt-10 grid gap-8 sm:grid-cols-2"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="show"
-        viewport={defaultViewport}
-      >
+      <div className="mt-10 grid gap-8 sm:grid-cols-2">
         {featuredProjects.map((project) => (
-          <motion.div
-            key={project.slug}
-            variants={fadeInUp}
-            transition={defaultTransition}
-          >
-            <ProjectCard project={project} />
-          </motion.div>
+          <ProjectCard key={project.slug} project={project} />
         ))}
-      </motion.div>
+      </div>
     </Container>
   );
 }
