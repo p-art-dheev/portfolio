@@ -12,7 +12,7 @@ export default function BlogsPage() {
   return (
     <PlaceholderPage
       title="Blogs"
-      description="Posts will show up here once the writing pipeline is wired in."
+      description="Coming soon"
     />
   );
 }

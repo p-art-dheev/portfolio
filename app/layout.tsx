@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://pardheev.dev"),
   title: {
-    default: "Pardheev — Full-Stack Developer",
+    default: "Pardheev",
     template: "%s · Pardheev",
   },
   description:

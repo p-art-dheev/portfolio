@@ -8,7 +8,6 @@ export function Footer() {
         <p>
           © {new Date().getFullYear()} {site.name}. Built for {site.domain}.
         </p>
-        <p>Static shell — content coming soon.</p>
       </Container>
     </footer>
   );
