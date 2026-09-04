@@ -104,7 +104,7 @@ export function ProjectPinUpField({
   items,
   placeholderCount = 0,
   overlapStrength = 0.45,
-  backgroundColor = "#0a0a0a",
+  backgroundColor,
   showGrid = false,
   gridOpacity = 0.18,
   cardRadius = 6,
@@ -545,6 +545,9 @@ export function ProjectPinUpField({
   return (
     <div
       ref={containerRef}
+      className={
+        backgroundColor ? undefined : "bg-background dark:bg-black"
+      }
       style={{
         position: "relative",
         width: "100%",
@@ -753,8 +756,8 @@ export function ProjectPinUpField({
                         : "brightness(1)",
                     boxShadow:
                       enableHoverEffect && activeCard === index
-                        ? `0 ${20 * shadowStrength}px ${60 * shadowStrength}px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.12)`
-                        : `0 ${8 * shadowStrength}px ${24 * shadowStrength}px rgba(0,0,0,0.45)`,
+                        ? `0 ${20 * shadowStrength}px ${60 * shadowStrength}px color-mix(in oklch, var(--foreground) 28%, transparent), 0 0 0 1px color-mix(in oklch, var(--foreground) 10%, transparent)`
+                        : `0 ${8 * shadowStrength}px ${24 * shadowStrength}px color-mix(in oklch, var(--foreground) 22%, transparent)`,
                     zIndex: activeCard === index ? 20 : 1,
                     cursor: item.link ? "pointer" : "grab",
                     pointerEvents: "all",
@@ -931,7 +934,7 @@ export function ProjectPinUpField({
               position: "absolute",
               inset: 0,
               zIndex: 50,
-              background: `radial-gradient(ellipse at center, transparent 15%, rgba(0,0,0,${hazeStrength * 0.75}) 100%)`,
+              background: `radial-gradient(ellipse at center, transparent 15%, color-mix(in oklch, var(--foreground) ${hazeStrength * 55}%, transparent) 100%)`,
             }}
           />
         )}

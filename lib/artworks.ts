@@ -41,7 +41,7 @@ export const artworks: Artwork[] = [
     },
   },
   {
-    title: "Cat",
+    title: "beluga",
     image: {
       src: "/artworks/061.jpg",
       alt: "Ink sketch of a cat's face",
@@ -55,21 +55,21 @@ export const artworks: Artwork[] = [
     },
   },
   {
-    title: "Portrait Study",
+    title: "Anime character",
     image: {
       src: "/artworks/081.jpg",
       alt: "Pencil portrait of a young woman",
     },
   },
   {
-    title: "Eye Study",
+    title: "Eye",
     image: {
       src: "/artworks/091.jpeg",
       alt: "Graphite drawing of an eye",
     },
   },
   {
-    title: "Dual Portrait",
+    title: "Ram and Bheem",
     image: {
       src: "/artworks/101.jpg",
       alt: "Pencil drawing of two men",
@@ -83,7 +83,7 @@ export const artworks: Artwork[] = [
     },
   },
   {
-    title: "Portrait",
+    title: "Ana De Armas",
     image: {
       src: "/artworks/121.jpg",
       alt: "Realistic graphite portrait of a woman",
