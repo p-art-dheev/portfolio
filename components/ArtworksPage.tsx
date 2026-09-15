@@ -1,15 +1,21 @@
 "use client";
 
-import { ProjectPinUpField } from "@/components/ProjectPinUpField";
+import { Container } from "@/components/Container";
+import { GalleryPhotogrid } from "@/components/GalleryPhotogrid";
 import { artworks } from "@/lib/artworks";
+
+const photos = artworks.map((artwork) => ({
+  src: artwork.image.src,
+  alt: artwork.image.alt,
+  title: artwork.title,
+  width: artwork.image.width,
+  height: artwork.image.height,
+}));
 
 export function ArtworksPage() {
   return (
-    <div className="bg-background relative h-[calc(100dvh-3.5rem)] w-full overflow-hidden dark:bg-black">
-      <ProjectPinUpField items={artworks} hazeStrength={0} />
-      <p className="text-muted-foreground pointer-events-none absolute bottom-4 left-4 z-[60] text-xs">
-        Drag to pan · Scroll to zoom · Double-click a piece to focus
-      </p>
-    </div>
+    <Container className="py-8 sm:py-12">
+      <GalleryPhotogrid photos={photos} />
+    </Container>
   );
 }
