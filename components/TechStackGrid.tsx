@@ -1,8 +1,10 @@
 import { techStack } from "@/lib/data";
+import { Reveal } from "@/components/Reveal";
 import { techIconMap } from "@/lib/tech-stack-icons";
 
 export function TechStackGrid() {
   return (
+    <Reveal>
     <section className="space-y-4">
       <h2 className="text-lg font-medium tracking-tight">Tech stack</h2>
       <ul className="flex flex-wrap gap-2">
@@ -25,5 +27,6 @@ export function TechStackGrid() {
         })}
       </ul>
     </section>
+    </Reveal>
   );
 }

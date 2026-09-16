@@ -108,13 +108,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </Badge>
           ))}
         </div>
-        <Link
-          href={project.href}
-          className="group/link inline-flex shrink-0 items-center gap-1 text-sm font-medium hover:underline"
-        >
-          View project
-          <ArrowUpRight className="size-3.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
-        </Link>
+        {project.href && (
+          <Link
+            href={project.href}
+            target={project.href.startsWith("http") ? "_blank" : undefined}
+            rel={project.href.startsWith("http") ? "noreferrer" : undefined}
+            className="group/link inline-flex shrink-0 items-center gap-1 text-sm font-medium hover:underline"
+          >
+            View project
+            <ArrowUpRight className="size-3.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+          </Link>
+        )}
       </CardContent>
       </Card>
     </div>

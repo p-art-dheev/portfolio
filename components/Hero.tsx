@@ -1,9 +1,11 @@
 import { site } from "@/lib/data";
 import { AvatarSwitcher } from "@/components/AvatarSwitcher";
+import { Reveal } from "@/components/Reveal";
 import { TimeStatus } from "@/components/TimeStatus";
 
 export function Hero() {
   return (
+    <Reveal>
     <section className="flex flex-col gap-6">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10">
@@ -21,5 +23,6 @@ export function Hero() {
         <TimeStatus className="hidden sm:flex" />
       </div>
     </section>
+    </Reveal>
   );
 }

@@ -3,7 +3,10 @@ export const site = {
   domain: "pardheev.dev",
   role: "Full-Stack Developer",
   tagline: "Building thoughtful products from idea to interface.",
-  bio: "Hey, I’m Pardheev Vatturu, a final-year student and developer. I like building things, mostly around full-stack development, AI and ML, and I enjoy learning by actually making stuff. Outside of tech, I like drawing realism, and digital art. Recently, I've started reading books on philosophy, psychology, self-help and productivity . I’m usually curious about random things and enjoy figuring out how they work. If you’re interested, feel free to check out some of the things I’ve built and written about here.",
+  bio: [
+    "Final-year student building things across full-stack development, AI, and ML. I learn best by shipping — real projects, real constraints.",
+    "Outside of tech, I draw realism and digital art, and I’ve been reading into philosophy, psychology, and productivity. Usually chasing whatever I’m curious about.",
+  ],
   college: "Amrita Vishwa Vidyapeetham",
   branch: "B.Tech Artificial Intelligence Engineering",
   year: "2023-2027",
@@ -24,12 +27,12 @@ export const site = {
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
-  { href: "/blogs", label: "Blogs" },
+  { href: "/artworks", label: "Artworks" },
 ] as const;
 
 export const moreLinks = [
   { href: "/books", label: "Books" },
-  { href: "/artworks", label: "Artworks" },
+  { href: "/blogs", label: "Blogs" },
 ] as const;
 
 import type { TechIconKey } from "@/lib/tech-stack-icons";
@@ -64,7 +67,7 @@ export type Project = {
   description: string;
   banner?: string;
   tags: string[];
-  href: string;
+  href?: string;
   status: ProjectStatus;
 };
 
@@ -76,17 +79,15 @@ export const featuredProjects: Project[] = [
       "Forecasted electricity demand using 16 years of PJM hourly load data with time-series analysis and SARIMA/SETAR models.",
     banner: "/projects/project-one/banner.png",
     tags: ["Python", "LSTM", "Time Series Analysis"],
-    href: "/projects",
     status: "off",
   },
   {
     slug: "project-two",
-    title: "Aspect Based Semtiment Analysis",
+    title: "Aspect Based Sentiment Analysis",
     description:
       "Built a BERT-based NLP model to classify sentiment from abstract or context-rich text.",
     banner: "/projects/project-two/banner.png",
     tags: ["BERT", "Transformers", "NLP"],
-    href: "/projects",
     status: "off",
   },
   {
@@ -96,7 +97,6 @@ export const featuredProjects: Project[] = [
       "Developed a web-based coding assessment platform for conducting and managing programming tests.",
     banner: "/projects/project-three/1.png",
     tags: ["Next.js", "TypeScript", "PostgreSQL"],
-    href: "/projects",
     status: "off",
   },
   {

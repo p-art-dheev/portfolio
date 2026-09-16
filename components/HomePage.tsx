@@ -2,7 +2,7 @@ import { Container } from "@/components/Container";
 import { ConnectSection } from "@/components/ConnectSection";
 import { FeaturedProjects } from "@/components/FeaturedProjects";
 import { Hero } from "@/components/Hero";
-import { AboutSection, EducationSection } from "@/components/HomeSections";
+import { AboutSection, EducationSection, ExploreSection } from "@/components/HomeSections";
 import { TechStackGrid } from "@/components/TechStackGrid";
 import { GithubHeatmapLazy } from "@/components/GithubHeatmapLazy";
 
@@ -16,6 +16,7 @@ export function HomePage() {
       <TechStackGrid />
       <GithubHeatmapLazy />
       <FeaturedProjects />
+      <ExploreSection />
     </Container>
   );
 }

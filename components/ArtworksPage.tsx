@@ -15,6 +15,10 @@ const photos = artworks.map((artwork) => ({
 export function ArtworksPage() {
   return (
     <Container className="py-8 sm:py-12">
+      <h1 className="text-3xl font-semibold tracking-tight">Artworks</h1>
+      <p className="text-muted-foreground mt-3 mb-8 max-w-xl">
+        Realism drawings and digital art. Click any piece to view full size.
+      </p>
       <GalleryPhotogrid photos={photos} />
     </Container>
   );
