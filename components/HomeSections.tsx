@@ -35,13 +35,9 @@ export function AboutSection() {
     <Reveal delay={0.05}>
       <section className="space-y-3">
         <h2 className="text-lg font-medium tracking-tight">About</h2>
-        <div className="space-y-3">
-          {site.bio.map((paragraph, i) => (
-            <p key={i} className="text-muted-foreground w-full leading-7">
-              {paragraph}
-            </p>
-          ))}
-        </div>
+        <p className="text-muted-foreground w-full leading-7">
+          {site.bio}
+        </p>
         <p className="text-sm font-medium">{site.tagline}</p>
       </section>
     </Reveal>

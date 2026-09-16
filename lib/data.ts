@@ -3,10 +3,7 @@ export const site = {
   domain: "pardheev.dev",
   role: "Full-Stack Developer",
   tagline: "Building thoughtful products from idea to interface.",
-  bio: [
-    "Final-year student building things across full-stack development, AI, and ML. I learn best by shipping — real projects, real constraints.",
-    "Outside of tech, I draw realism and digital art, and I’ve been reading into philosophy, psychology, and productivity. Usually chasing whatever I’m curious about.",
-  ],
+  bio: "Hey, I’m Pardheev Vatturu, a final-year student and developer. I like building things, mostly around full-stack development, AI and ML, and I enjoy learning by actually making stuff. Outside of tech, I like drawing realism, and digital art. Recently, I’ve started reading books on philosophy, psychology, self-help and productivity. I’m usually curious about random things and enjoy figuring out how they work. If you’re interested, feel free to check out some of the things I’ve built and written about here.",
   college: "Amrita Vishwa Vidyapeetham",
   branch: "B.Tech Artificial Intelligence Engineering",
   year: "2023-2027",
