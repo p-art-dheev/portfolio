@@ -7,7 +7,7 @@ import { Github } from "@/components/icons";
 import { site } from "@/lib/data";
 
 const githubTheme = {
-  dark: ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"],
+  dark: ["#2a2a2a", "#0e4429", "#006d32", "#26a641", "#39d353"],
   light: ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
 };
 
@@ -49,7 +49,7 @@ export function GithubHeatmap() {
         </a>
       </div>
 
-      <div className="heatmap-scroll -mx-1 px-1 pb-1">
+      <div className="heatmap-scroll">
         <GitHubCalendar
           username={githubUsername}
           year="last"
