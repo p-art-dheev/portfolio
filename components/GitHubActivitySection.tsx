@@ -56,6 +56,37 @@ export function GithubHeatmap() {
           showWeekdayLabels
           colorScheme={colorScheme}
           theme={githubTheme}
+          tooltips={{
+            activity: {
+              text: (activity) => {
+                const date = new Date(
+                  `${activity.date}T00:00:00`,
+                ).toLocaleDateString(undefined, {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                });
+                const label =
+                  activity.count === 0
+                    ? "No contributions"
+                    : `${activity.count} contribution${
+                        activity.count === 1 ? "" : "s"
+                      }`;
+                return `${label} on ${date}`;
+              },
+              withArrow: true,
+              placement: "top",
+              offset: 8,
+              hoverRestMs: 40,
+              transitionStyles: {
+                initial: { opacity: 0 },
+                open: { opacity: 1 },
+                close: { opacity: 0 },
+                duration: 130,
+              },
+            },
+          }}
         />
       </div>
     </section>
