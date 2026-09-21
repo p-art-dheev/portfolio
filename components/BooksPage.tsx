@@ -2,9 +2,9 @@
 
 import { Book } from "@/components/Book";
 import { Container } from "@/components/Container";
-import { books } from "@/lib/books";
+import type { BookItem } from "@/lib/content-types";
 
-export function BooksPage() {
+export function BooksPage({ books }: { books: BookItem[] }) {
   return (
     <Container className="py-16">
       <h1 className="text-3xl font-semibold tracking-tight">Books</h1>

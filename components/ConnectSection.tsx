@@ -1,17 +1,17 @@
 import { Mail } from "lucide-react";
 
-import { site } from "@/lib/data";
+import type { SiteContent } from "@/lib/content-types";
 import { Github, Linkedin } from "@/components/icons";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 
-const socials = [
-  { href: site.socials.linkedin, label: "LinkedIn", icon: Linkedin },
-  { href: site.socials.github, label: "GitHub", icon: Github },
-  { href: `mailto:${site.socials.email}`, label: "Email", icon: Mail },
-] as const;
+export function ConnectSection({ site }: { site: SiteContent }) {
+  const socials = [
+    { href: site.socials.linkedin, label: "LinkedIn", icon: Linkedin },
+    { href: site.socials.github, label: "GitHub", icon: Github },
+    { href: `mailto:${site.socials.email}`, label: "Email", icon: Mail },
+  ] as const;
 
-export function ConnectSection() {
   return (
     <Reveal delay={0.05}>
       <section className="space-y-3">

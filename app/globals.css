@@ -178,3 +178,74 @@
 .react-activity-calendar__tooltip-arrow {
   fill: var(--popover);
 }
+
+.blog-content {
+  line-height: 1.75;
+}
+
+.blog-content h1,
+.blog-content h2,
+.blog-content h3 {
+  color: var(--foreground);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.blog-content h1 {
+  font-size: 1.75rem;
+}
+
+.blog-content h2 {
+  font-size: 1.4rem;
+}
+
+.blog-content h3 {
+  font-size: 1.15rem;
+}
+
+.blog-content p,
+.blog-content ul,
+.blog-content ol {
+  color: var(--muted-foreground);
+  margin: 0.75rem 0;
+}
+
+.blog-content a {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.blog-content img {
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  max-width: 100%;
+  height: auto;
+}
+
+.blog-content ul,
+.blog-content ol {
+  padding-left: 1.25rem;
+}
+
+.blog-content blockquote {
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+.tiptap {
+  min-height: 16rem;
+  outline: none;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--muted-foreground);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}

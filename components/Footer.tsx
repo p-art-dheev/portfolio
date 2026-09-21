@@ -1,10 +1,10 @@
 import { Mail } from "lucide-react";
 
-import { site } from "@/lib/data";
+import type { SiteContent } from "@/lib/content-types";
 import { Github, Linkedin } from "@/components/icons";
 import { Container } from "@/components/Container";
 
-export function Footer() {
+export function Footer({ site }: { site: SiteContent }) {
   return (
     <footer className="border-border/80 mt-auto border-t">
       <Container className="flex flex-col gap-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">

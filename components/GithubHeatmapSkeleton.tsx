@@ -1,9 +1,8 @@
 import { Github } from "@/components/icons";
-import { site } from "@/lib/data";
+import { githubUsernameFromUrl } from "@/lib/sanitize";
 
-const githubUsername = site.socials.github.replace("https://github.com/", "");
-
-export function GithubHeatmapSkeleton() {
+export function GithubHeatmapSkeleton({ githubUrl }: { githubUrl: string }) {
+  const githubUsername = githubUsernameFromUrl(githubUrl);
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between gap-4">

@@ -1,15 +1,17 @@
-import { techStack } from "@/lib/data";
+import type { TechItem } from "@/lib/content-types";
 import { Reveal } from "@/components/Reveal";
 import { techIconMap } from "@/lib/tech-stack-icons";
 
-export function TechStackGrid() {
+export function TechStackGrid({ items }: { items: TechItem[] }) {
   return (
     <Reveal>
     <section className="space-y-4">
       <h2 className="text-lg font-medium tracking-tight">Tech stack</h2>
       <ul className="flex flex-wrap gap-2">
-        {techStack.map((item) => {
-          const { Icon, color, adaptive } = techIconMap[item.icon];
+        {items.map((item) => {
+          const config = techIconMap[item.icon];
+          if (!config) return null;
+          const { Icon, color, adaptive } = config;
 
           return (
             <li

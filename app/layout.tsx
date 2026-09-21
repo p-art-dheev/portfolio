@@ -3,8 +3,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-import { Footer } from "@/components/Footer";
-import { Navbar } from "@/components/Navbar";
 import { ThemeScript } from "@/components/ThemeScript";
 
 import "./globals.css";
@@ -47,9 +45,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col font-sans antialiased`}
         suppressHydrationWarning
       >
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
         <Analytics />
         <SpeedInsights />
       </body>

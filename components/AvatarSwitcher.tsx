@@ -3,14 +3,19 @@
 import { useState } from "react";
 import Image from "next/image";
 
-import { site } from "@/lib/data";
-
-export function AvatarSwitcher() {
+export function AvatarSwitcher({
+  avatars,
+  name,
+}: {
+  avatars: string[];
+  name: string;
+}) {
   const [avatarIndex, setAvatarIndex] = useState(0);
-  const avatarSrc = site.avatars[avatarIndex];
+  const list = avatars.length > 0 ? avatars : ["/avatars/avatar-default.png"];
+  const avatarSrc = list[avatarIndex % list.length];
 
   function switchAvatar() {
-    setAvatarIndex((index) => (index + 1) % site.avatars.length);
+    setAvatarIndex((index) => (index + 1) % list.length);
   }
 
   return (
@@ -22,7 +27,7 @@ export function AvatarSwitcher() {
     >
       <Image
         src={avatarSrc}
-        alt={`Portrait of ${site.name}`}
+        alt={`Portrait of ${name}`}
         width={128}
         height={128}
         priority

@@ -1,8 +1,8 @@
 import { GraduationCap } from "lucide-react";
 
-import { site } from "@/lib/data";
+import type { SiteContent } from "@/lib/content-types";
 
-export function EducationCard() {
+export function EducationCard({ site }: { site: SiteContent }) {
   return (
     <div className="border-border w-fit max-w-lg space-y-2.5 border-l-2 pl-4">
       <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium tracking-wide uppercase">

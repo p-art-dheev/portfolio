@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { site } from "@/lib/data";
+import type { SiteContent } from "@/lib/content-types";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
 import { EducationCard } from "@/components/EducationCard";
 
-export function EducationSection() {
+export function EducationSection({ site }: { site: SiteContent }) {
   return (
     <Reveal>
       <section className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
-        <EducationCard />
+        <EducationCard site={site} />
         <div className="flex flex-row gap-3 sm:flex-col sm:items-end">
           <Button className="flex-1 sm:w-36 sm:flex-none" asChild>
             <a href={site.resume} target="_blank" rel="noreferrer">
@@ -30,7 +30,7 @@ export function EducationSection() {
   );
 }
 
-export function AboutSection() {
+export function AboutSection({ site }: { site: SiteContent }) {
   return (
     <Reveal delay={0.05}>
       <section className="space-y-3">

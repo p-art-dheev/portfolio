@@ -2,17 +2,17 @@
 
 import { Container } from "@/components/Container";
 import { GalleryPhotogrid } from "@/components/GalleryPhotogrid";
-import { artworks } from "@/lib/artworks";
+import type { ArtworkItem } from "@/lib/content-types";
 
-const photos = artworks.map((artwork) => ({
-  src: artwork.image.src,
-  alt: artwork.image.alt,
-  title: artwork.title,
-  width: artwork.image.width,
-  height: artwork.image.height,
-}));
+export function ArtworksPage({ artworks }: { artworks: ArtworkItem[] }) {
+  const photos = artworks.map((artwork) => ({
+    src: artwork.image.src,
+    alt: artwork.image.alt,
+    title: artwork.title,
+    width: artwork.image.width,
+    height: artwork.image.height,
+  }));
 
-export function ArtworksPage() {
   return (
     <Container className="py-8 sm:py-12">
       <h1 className="text-3xl font-semibold tracking-tight">Artworks</h1>

@@ -1,3 +1,7 @@
+import type { Project, TechItem } from "@/lib/content-types";
+
+export type { Project, ProjectStatus, TechItem } from "@/lib/content-types";
+
 export const site = {
   name: "Pardheev",
   domain: "pardheev.dev",
@@ -32,13 +36,6 @@ export const moreLinks = [
   { href: "/blogs", label: "Blogs" },
 ] as const;
 
-import type { TechIconKey } from "@/lib/tech-stack-icons";
-
-export type TechItem = {
-  label: string;
-  icon: TechIconKey;
-};
-
 export const techStack: TechItem[] = [
   { label: "TypeScript", icon: "typescript" },
   { label: "Next.js", icon: "nextjs" },
@@ -55,18 +52,6 @@ export const techStack: TechItem[] = [
   { label: "NumPy", icon: "numpy" },
   { label: "pandas", icon: "pandas" },
 ];
-
-export type ProjectStatus = "off" | "live" | "Building";
-
-export type Project = {
-  slug: string;
-  title: string;
-  description: string;
-  banner?: string;
-  tags: string[];
-  href?: string;
-  status: ProjectStatus;
-};
 
 export const featuredProjects: Project[] = [
   {

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu } from "lucide-react";
 
-import { moreLinks, navLinks, site } from "@/lib/data";
+import { moreLinks, navLinks } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/Container";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -32,7 +32,7 @@ function navLinkClass(isActive: boolean) {
   );
 }
 
-export function Navbar() {
+export function Navbar({ domain }: { domain: string }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const moreActive = moreLinks.some((link) => pathname.startsWith(link.href));
@@ -41,7 +41,7 @@ export function Navbar() {
     <header className="border-border/80 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-md">
       <Container className="flex h-14 items-center justify-between gap-4">
         <Link href="/" className="font-medium tracking-tight">
-          {site.domain}
+          {domain}
         </Link>
 
         <nav className="hidden items-center gap-1 sm:flex" aria-label="Primary">
