@@ -2,8 +2,15 @@ import type { SiteContent } from "@/lib/content-types";
 import { AvatarSwitcher } from "@/components/AvatarSwitcher";
 import { Reveal } from "@/components/Reveal";
 import { TimeStatus } from "@/components/TimeStatus";
+import { VisitorCount } from "@/components/VisitorCount";
 
-export function Hero({ site }: { site: SiteContent }) {
+export function Hero({
+  site,
+  visitorCount,
+}: {
+  site: SiteContent;
+  visitorCount: number;
+}) {
   return (
     <Reveal>
     <section className="flex flex-col gap-6">
@@ -18,6 +25,7 @@ export function Hero({ site }: { site: SiteContent }) {
               Hi, I&apos;m {site.name}
             </h1>
             <p className="text-lg text-muted-foreground">{site.role}</p>
+            <VisitorCount initialCount={visitorCount} />
           </div>
         </div>
         <TimeStatus className="hidden sm:flex" />

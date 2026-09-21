@@ -8,17 +8,19 @@ import { GithubHeatmapLazy } from "@/components/GithubHeatmapLazy";
 import {
   getFeaturedProjects,
   getSiteSettings,
+  getSiteVisitorCount,
 } from "@/lib/queries";
 
 export async function HomePage() {
-  const [site, projects] = await Promise.all([
+  const [site, projects, visitorCount] = await Promise.all([
     getSiteSettings(),
     getFeaturedProjects(),
+    getSiteVisitorCount(),
   ]);
 
   return (
     <Container as="div" className="flex flex-col gap-10 py-8 sm:gap-12 sm:py-12">
-      <Hero site={site} />
+      <Hero site={site} visitorCount={visitorCount} />
       <EducationSection site={site} />
       <AboutSection site={site} />
       <ConnectSection site={site} />

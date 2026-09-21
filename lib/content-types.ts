@@ -62,7 +62,7 @@ export type PostListItem = {
   publishedAt: string | null;
   tags: string[];
   category: string;
-  viewsCount: number;
+  readsCount: number;
   likesCount: number;
 };
 
@@ -88,7 +88,7 @@ export type AdminPost = {
   publishedAt: string | null;
   tags: string[];
   category: string;
-  viewsCount: number;
+  readsCount: number;
   likesCount: number;
 };
 

@@ -258,7 +258,7 @@ function mapPostList(row: Record<string, unknown>): PostListItem {
     publishedAt: (row.published_at as string | null) ?? null,
     tags: asStringArray(row.tags),
     category: typeof row.category === "string" ? row.category : "",
-    viewsCount: Number(row.views_count) || 0,
+    readsCount: Number(row.reads_count) || 0,
     likesCount: Number(row.likes_count) || 0,
   };
 }
@@ -305,8 +305,12 @@ export async function getPublishedPost(
       .maybeSingle();
 
     if (error || !data) return null;
+    const { data: reads } = await supabase.rpc("get_post_read_count", {
+      post_slug: slug,
+    });
     return {
       ...mapPostList(data as Record<string, unknown>),
+      readsCount: Number(reads) || 0,
       contentHtml: data.content_html as string,
     };
   } catch {
@@ -465,4 +469,16 @@ export async function getAdminCounts() {
     artworks: tally(artworks.data as { id: string; published: boolean }[] | null),
     books: tally(books.data as { id: string; published: boolean }[] | null),
   };
+}
+
+export async function getSiteVisitorCount() {
+  if (!isSupabaseConfigured()) return 0;
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data, error } = await supabase.rpc("get_site_visitor_count");
+    if (error) return 0;
+    return Number(data) || 0;
+  } catch {
+    return 0;
+  }
 }

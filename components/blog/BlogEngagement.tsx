@@ -1,35 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Eye, Heart, Share2 } from "lucide-react";
+import { BookOpen, Check, Heart, Share2 } from "lucide-react";
 
+import { getVisitorId } from "@/lib/visitor";
 import { Button } from "@/components/ui/button";
 
 export function BlogEngagement({
   slug,
-  initialViews,
+  initialReads,
   initialLikes,
 }: {
   slug: string;
-  initialViews: number;
+  initialReads: number;
   initialLikes: number;
 }) {
-  const [views, setViews] = useState(initialViews);
+  const [reads, setReads] = useState(initialReads);
   const [likes, setLikes] = useState(initialLikes);
   const [liked, setLiked] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const viewedKey = `blog-viewed:${slug}`;
     const likedKey = `blog-liked:${slug}`;
     setLiked(window.localStorage.getItem(likedKey) === "1");
 
-    if (sessionStorage.getItem(viewedKey)) return;
-    sessionStorage.setItem(viewedKey, "1");
-    fetch(`/api/posts/${slug}/view`, { method: "POST" })
+    const visitorId = getVisitorId();
+    fetch(`/api/posts/${slug}/view`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitorId }),
+    })
       .then((response) => response.json())
-      .then((data: { views?: number }) => {
-        if (typeof data.views === "number") setViews(data.views);
+      .then((data: { reads?: number }) => {
+        if (typeof data.reads === "number") setReads(data.reads);
       })
       .catch(() => {});
   }, [slug]);
@@ -58,8 +61,8 @@ export function BlogEngagement({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-muted-foreground inline-flex items-center gap-1.5 text-sm">
-        <Eye className="size-4" />
-        {views} {views === 1 ? "view" : "views"}
+        <BookOpen className="size-4" />
+        {reads.toLocaleString()} {reads === 1 ? "read" : "reads"}
       </span>
       <Button
         type="button"

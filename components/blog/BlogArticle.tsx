@@ -72,7 +72,7 @@ export function BlogArticle({
         </div>
         <BlogEngagement
           slug={post.slug}
-          initialViews={post.viewsCount}
+          initialReads={post.readsCount}
           initialLikes={post.likesCount}
         />
       </div>

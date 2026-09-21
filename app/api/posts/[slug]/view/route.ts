@@ -1,28 +1,27 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+import { createAnonSupabaseClient } from "@/lib/supabase/anon";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-
-function client() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-}
+import { isVisitorId } from "@/lib/visitor";
 
 export async function POST(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ slug: string }> },
 ) {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json({ views: 0 });
+    return NextResponse.json({ reads: 0 });
   }
   const { slug } = await context.params;
-  const { data, error } = await client().rpc("increment_post_views", {
-    post_slug: slug,
-  });
-  if (error) {
-    return NextResponse.json({ views: 0 });
+  const body = (await request.json().catch(() => null)) as {
+    visitorId?: unknown;
+  } | null;
+  if (!isVisitorId(body?.visitorId)) {
+    return NextResponse.json({ reads: 0 }, { status: 400 });
   }
-  return NextResponse.json({ views: Number(data) || 0 });
+  const { data, error } = await createAnonSupabaseClient().rpc(
+    "record_post_read",
+    { post_slug: slug, vid: body.visitorId },
+  );
+  if (error) return NextResponse.json({ reads: 0 });
+  return NextResponse.json({ reads: Number(data) || 0 });
 }
