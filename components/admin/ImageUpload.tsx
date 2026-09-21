@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { ImagePlus, LoaderCircle } from "lucide-react";
 
 import { uploadMediaFile } from "@/lib/admin/actions";
+import { prepareImage } from "@/lib/admin/prepare-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,11 @@ type ImageUploadProps = {
   defaultUrl?: string;
   accept?: string;
   onMeta?: (meta: { width: number; height: number }) => void;
+  /** Show the preview cropped to 16:9, exactly as blog covers are displayed. */
+  cover?: boolean;
+  hint?: string;
+  /** Called whenever the image URL changes (upload, paste, remove). */
+  onChange?: (url: string) => void;
 };
 
 export function ImageUpload({
@@ -25,14 +31,40 @@ export function ImageUpload({
   defaultUrl = "",
   accept = "image/*",
   onMeta,
+  cover = false,
+  hint,
+  onChange,
 }: ImageUploadProps) {
   const [url, setUrl] = useState(defaultUrl);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [dragging, setDragging] = useState(false);
 
-  function upload(file: File) {
+  function setValue(next: string) {
+    setUrl(next);
+    onChange?.(next);
+  }
+
+  function upload(original: File) {
     setError(null);
+    if (
+      !original.type.startsWith("image/") &&
+      original.type !== "application/pdf"
+    ) {
+      setError("Choose an image (JPG, PNG, WebP, GIF or AVIF).");
+      return;
+    }
+    startTransition(async () => {
+      const file = await prepareImage(original);
+      if (file.size > 10 * 1024 * 1024) {
+        setError("That image is still over 10 MB after compression.");
+        return;
+      }
+      await send(file);
+    });
+  }
+
+  async function send(file: File) {
     if (file.type.startsWith("image/") && onMeta) {
       const preview = URL.createObjectURL(file);
       const image = new window.Image();
@@ -46,14 +78,16 @@ export function ImageUpload({
     const data = new FormData();
     data.set("file", file);
     data.set("folder", folder);
-    startTransition(async () => {
+    try {
       const result = await uploadMediaFile(data);
       if (result.error || !result.url) {
         setError(result.error ?? "Upload failed.");
         return;
       }
-      setUrl(result.url);
-    });
+      setValue(result.url);
+    } catch {
+      setError("Upload failed. Check your connection and try again.");
+    }
   }
 
   return (
@@ -83,20 +117,26 @@ export function ImageUpload({
           <img
             src={url}
             alt=""
-            className="mb-3 max-h-48 w-full rounded-xl object-contain"
+            className={cn(
+              "mb-3 w-full rounded-xl",
+              cover ? "aspect-video object-cover" : "max-h-48 object-contain",
+            )}
           />
         ) : (
           <ImagePlus className="text-muted-foreground mb-2 size-8" />
         )}
         <p className="text-sm font-medium">
-          {pending ? "Uploading…" : url ? "Replace image" : "Tap or drop an image"}
+          {pending
+            ? "Uploading…"
+            : url
+              ? "Replace image"
+              : "Tap or drop an image"}
         </p>
         <p className="text-muted-foreground mt-1 text-xs">
-          Works from camera roll or desktop. Max 10 MB.
+          {hint ??
+            "Works from camera roll or desktop. Large photos are resized automatically."}
         </p>
-        {pending ? (
-          <LoaderCircle className="mt-2 size-4 animate-spin" />
-        ) : null}
+        {pending ? <LoaderCircle className="mt-2 size-4 animate-spin" /> : null}
       </label>
       <Input
         id={`${name}-file`}
@@ -111,7 +151,7 @@ export function ImageUpload({
       />
       <Input
         value={url}
-        onChange={(event) => setUrl(event.target.value)}
+        onChange={(event) => setValue(event.target.value)}
         placeholder="Or paste an image URL"
       />
       {error ? <p className="text-destructive text-xs">{error}</p> : null}
@@ -120,7 +160,7 @@ export function ImageUpload({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => setUrl("")}
+          onClick={() => setValue("")}
         >
           Remove
         </Button>

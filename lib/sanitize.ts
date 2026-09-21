@@ -32,9 +32,22 @@ export function sanitizePostHtml(html: string) {
       "*": ["class"],
     },
     allowedSchemes: ["http", "https", "mailto"],
+    transformTags: {
+      a: (tagName, attribs) => {
+        const external = /^https?:\/\//i.test(attribs.href ?? "");
+        return {
+          tagName,
+          attribs: external
+            ? { ...attribs, target: "_blank", rel: "noopener noreferrer" }
+            : attribs,
+        };
+      },
+    },
   });
 }
 
 export function githubUsernameFromUrl(url: string) {
-  return url.replace(/^https?:\/\/(www\.)?github\.com\//, "").replace(/\/$/, "");
+  return url
+    .replace(/^https?:\/\/(www\.)?github\.com\//, "")
+    .replace(/\/$/, "");
 }

@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
       : [],
   },
   experimental: {
+    // Media uploads go through server actions (10 MB cap enforced there).
+    serverActions: { bodySizeLimit: "12mb" },
     optimizePackageImports: ["lucide-react", "radix-ui", "react-icons"],
   },
 };

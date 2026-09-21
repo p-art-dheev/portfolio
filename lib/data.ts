@@ -14,10 +14,7 @@ export const site = {
   location: "Coimbatore, India",
   status: "online" as const,
   resume: "/resume/resume.pdf",
-  avatars: [
-    "/avatars/avatar-default.png",
-    "/avatars/avatar.jpg",
-  ] as const,
+  avatars: ["/avatars/avatar-default.png", "/avatars/avatar.jpg"] as const,
   socials: {
     linkedin: "https://linkedin.com/in/pardheev-vatturu/",
     github: "https://github.com/p-art-dheev",
@@ -29,12 +26,10 @@ export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
   { href: "/artworks", label: "Artworks" },
-] as const;
-
-export const moreLinks = [
-  { href: "/books", label: "Books" },
   { href: "/blogs", label: "Blogs" },
 ] as const;
+
+export const moreLinks = [{ href: "/books", label: "Books" }] as const;
 
 export const techStack: TechItem[] = [
   { label: "TypeScript", icon: "typescript" },

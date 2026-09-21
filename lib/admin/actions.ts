@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { isAdminUser } from "@/lib/admin/auth";
+import { excerptFromHtml, normalizeTags, readingTimeMinutes } from "@/lib/blog";
+import { sanitizePostHtml } from "@/lib/sanitize";
 import { slugify } from "@/lib/slug";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { ProjectStatus, TechItem } from "@/lib/content-types";
@@ -14,7 +17,7 @@ async function requireAdmin() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
+  if (!isAdminUser(user)) {
     throw new Error("Unauthorized");
   }
   return supabase;
@@ -53,10 +56,19 @@ export async function signOut() {
   redirect("/admin/login");
 }
 
+const UPLOAD_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+  "application/pdf": "pdf",
+};
+
 export async function uploadMediaFile(formData: FormData) {
   const supabase = await requireAdmin();
   const file = formData.get("file");
-  const folder = str(formData, "folder") || "uploads";
+  const folder = slugify(str(formData, "folder")) || "uploads";
 
   if (!(file instanceof File) || file.size === 0) {
     return { error: "Choose a file to upload." };
@@ -64,11 +76,15 @@ export async function uploadMediaFile(formData: FormData) {
   if (file.size > 10 * 1024 * 1024) {
     return { error: "File is larger than 10 MB." };
   }
+  const ext = UPLOAD_TYPES[file.type];
+  if (!ext) {
+    return { error: "Unsupported file type. Use JPG, PNG, WebP, GIF or AVIF." };
+  }
 
-  const ext = file.name.split(".").pop()?.toLowerCase() || "bin";
   const path = `${folder}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from("media").upload(path, file, {
-    cacheControl: "3600",
+    cacheControl: "31536000",
+    contentType: file.type,
     upsert: false,
   });
   if (error) return { error: error.message };
@@ -126,72 +142,154 @@ export async function deleteProject(formData: FormData) {
   redirect("/admin/projects");
 }
 
-export async function savePost(formData: FormData) {
+export type PostActionResult = {
+  error?: string;
+  id?: string;
+  slug?: string;
+  published?: boolean;
+  savedAt?: string;
+};
+
+function revalidatePostPages(...slugs: (string | undefined)[]) {
+  revalidatePublic();
+  for (const slug of new Set(slugs)) {
+    if (slug) revalidatePath(`/blogs/${slug}`);
+  }
+}
+
+function hasContent(html: string) {
+  return html.replace(/<[^>]+>/g, "").trim().length > 0 || /<img/.test(html);
+}
+
+export async function savePost(formData: FormData): Promise<PostActionResult> {
   const supabase = await requireAdmin();
   const id = str(formData, "id");
   const title = str(formData, "title");
   const slug = slugify(str(formData, "slug") || title);
-  const published = bool(formData, "published");
+  // "draft"/"unpublish" force draft, "publish" forces live, otherwise keep as is.
+  const intent = str(formData, "intent");
+
+  if (!title) return { error: "Add a title before saving." };
+  if (!slug) return { error: "The URL slug can't be empty." };
+
+  const existing = id
+    ? (
+        await supabase
+          .from("posts")
+          .select("slug, published, published_at")
+          .eq("id", id)
+          .maybeSingle()
+      ).data
+    : null;
+  if (id && !existing) return { error: "This post no longer exists." };
+
+  const published =
+    intent === "publish"
+      ? true
+      : intent === "draft" || intent === "unpublish"
+        ? false
+        : Boolean(existing?.published);
+
+  const contentHtml = sanitizePostHtml(
+    String(formData.get("content_html") ?? ""),
+  );
+  if (published && !hasContent(contentHtml)) {
+    return { error: "Write something in the body before publishing." };
+  }
 
   const payload = {
     title,
     slug,
-    excerpt: str(formData, "excerpt"),
-    content_html: String(formData.get("content_html") ?? ""),
+    excerpt: str(formData, "excerpt") || excerptFromHtml(contentHtml),
+    content_html: contentHtml,
     cover_url: optionalUrl(str(formData, "cover_url")),
+    cover_alt: str(formData, "cover_alt"),
     published,
-    published_at: published ? new Date().toISOString() : null,
-    tags: str(formData, "tags")
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter(Boolean),
+    // Keep the original publish date across unpublish/republish cycles.
+    published_at:
+      (existing?.published_at as string | null) ??
+      (published ? new Date().toISOString() : null),
+    tags: normalizeTags(str(formData, "tags")),
     category: str(formData, "category"),
+    reading_minutes: readingTimeMinutes(contentHtml),
   };
 
-  if (!title || !slug) {
-    return { error: "Title is required." };
-  }
+  const write = (values: Record<string, unknown>) =>
+    id
+      ? supabase.from("posts").update(values).eq("id", id).select("id").single()
+      : supabase.from("posts").insert(values).select("id").single();
 
-  if (id && published) {
-    const { data } = await supabase
-      .from("posts")
-      .select("published_at")
-      .eq("id", id)
-      .maybeSingle();
-    if (data?.published_at) {
-      payload.published_at = data.published_at as string;
+  let { data, error } = await write(payload);
+  // Until migrate-blog-v2.sql is applied the two new columns don't exist;
+  // save without them rather than locking the author out.
+  if (error?.message.match(/reading_minutes|cover_alt/)) {
+    const { reading_minutes, cover_alt, ...legacy } = payload;
+    void reading_minutes;
+    void cover_alt;
+    ({ data, error } = await write(legacy));
+  }
+  if (error || !data) {
+    if (error?.code === "23505") {
+      return { error: `The slug "${slug}" is already used by another post.` };
     }
+    return { error: error?.message ?? "Could not save the post." };
   }
 
-  const query = id
-    ? supabase.from("posts").update(payload).eq("id", id)
-    : supabase.from("posts").insert(payload);
+  revalidatePostPages(slug, existing?.slug as string | undefined);
+  return {
+    id: data.id as string,
+    slug,
+    published,
+    savedAt: new Date().toISOString(),
+  };
+}
 
-  let { error } = await query;
-  if (error?.message.includes("category") || error?.message.includes("tags")) {
-    const { tags, category, ...basic } = payload;
-    void tags;
-    void category;
-    const retry = id
-      ? supabase.from("posts").update(basic).eq("id", id)
-      : supabase.from("posts").insert(basic);
-    const retried = await retry;
-    error = retried.error;
+export async function setPostPublished(
+  formData: FormData,
+): Promise<PostActionResult> {
+  const supabase = await requireAdmin();
+  const id = str(formData, "id");
+  const published = bool(formData, "published");
+
+  const { data: post } = await supabase
+    .from("posts")
+    .select("slug, published_at, content_html")
+    .eq("id", id)
+    .maybeSingle();
+  if (!post) return { error: "This post no longer exists." };
+  if (published && !hasContent(String(post.content_html ?? ""))) {
+    return {
+      error: "This post has no content yet. Open it and write something first.",
+    };
   }
+
+  const { error } = await supabase
+    .from("posts")
+    .update({
+      published,
+      published_at:
+        (post.published_at as string | null) ??
+        (published ? new Date().toISOString() : null),
+    })
+    .eq("id", id);
   if (error) return { error: error.message };
 
-  revalidatePublic();
-  revalidatePath(`/blogs/${slug}`);
-  redirect("/admin/blogs?saved=1");
+  revalidatePostPages(post.slug as string);
+  return { id, slug: post.slug as string, published };
 }
 
 export async function deletePost(formData: FormData) {
   const supabase = await requireAdmin();
   const id = str(formData, "id");
+  const { data: post } = await supabase
+    .from("posts")
+    .select("slug")
+    .eq("id", id)
+    .maybeSingle();
   const { error } = await supabase.from("posts").delete().eq("id", id);
   if (error) return { error: error.message };
-  revalidatePublic();
-  redirect("/admin/blogs");
+  revalidatePostPages(post?.slug as string | undefined);
+  redirect("/admin/blogs?deleted=1");
 }
 
 export async function saveArtwork(formData: FormData) {

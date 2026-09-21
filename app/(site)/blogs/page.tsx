@@ -4,8 +4,14 @@ import { BlogsPage } from "@/components/BlogsPage";
 import { getPublishedPosts } from "@/lib/queries";
 
 export const metadata: Metadata = {
-  title: "Blogs",
-  description: "Writing on development, AI, and ideas.",
+  title: "Blog",
+  description:
+    "Writing on full-stack development, AI, art, and ideas by Pardheev Vatturu.",
+  alternates: {
+    canonical: "/blogs",
+    types: { "application/rss+xml": "/blogs/rss.xml" },
+  },
+  openGraph: { title: "Blog · Pardheev Vatturu", url: "/blogs" },
 };
 
 export default async function BlogsRoute() {

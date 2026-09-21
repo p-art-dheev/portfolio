@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { isAdminUser } from "@/lib/admin/auth";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
@@ -20,7 +21,7 @@ export default async function AdminDashboardLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!isAdminUser(user)) {
     redirect("/admin/login");
   }
 

@@ -52,7 +52,7 @@ begin
   ) then
     insert into public.post_readers (post_slug, visitor_id)
     values (record_post_read.post_slug, vid)
-    on conflict (post_slug, visitor_id) do nothing;
+    on conflict on constraint post_readers_pkey do nothing;
   end if;
   return (
     select count(*)::int from public.post_readers r

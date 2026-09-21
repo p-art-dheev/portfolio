@@ -17,10 +17,12 @@ import type {
   SiteSocials,
   TechItem,
 } from "@/lib/content-types";
+import { readingTimeMinutes } from "@/lib/blog";
 import { artworks as fallbackArtworks } from "@/lib/artworks";
 import { books as fallbackBooks } from "@/lib/books";
 import { featuredProjects, site, techStack } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { createAnonSupabaseClient } from "@/lib/supabase/anon";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export function fallbackSite(): SiteContent {
@@ -250,6 +252,8 @@ function asStringArray(value: unknown): string[] {
 }
 
 function mapPostList(row: Record<string, unknown>): PostListItem {
+  const content =
+    typeof row.content_html === "string" ? row.content_html : null;
   return {
     slug: String(row.slug ?? ""),
     title: String(row.title ?? ""),
@@ -260,63 +264,115 @@ function mapPostList(row: Record<string, unknown>): PostListItem {
     category: typeof row.category === "string" ? row.category : "",
     readsCount: Number(row.reads_count) || 0,
     likesCount: Number(row.likes_count) || 0,
+    readingMinutes:
+      Number(row.reading_minutes) > 0
+        ? Number(row.reading_minutes)
+        : content
+          ? readingTimeMinutes(content)
+          : 1,
+  };
+}
+
+function mapPostDetail(row: Record<string, unknown>): PostDetail {
+  return {
+    ...mapPostList(row),
+    contentHtml: String(row.content_html ?? ""),
+    coverAlt: String(row.cover_alt ?? ""),
+    updatedAt: (row.updated_at as string | null) ?? null,
   };
 }
 
 function mapAdminPost(row: Record<string, unknown>): AdminPost {
   return {
-    ...mapPostList(row),
+    ...mapPostDetail(row),
     id: String(row.id ?? ""),
-    contentHtml: String(row.content_html ?? ""),
     published: Boolean(row.published),
+    createdAt: (row.created_at as string | null) ?? null,
   };
 }
 
-export async function getPublishedPosts(): Promise<PostListItem[]> {
+// List views never need the (large) body. The stored reading_minutes column
+// comes from migrate-blog-v2.sql; before it is applied we fall back to `*`.
+const POST_LIST_COLUMNS =
+  "id, slug, title, excerpt, cover_url, published, published_at, tags, category, likes_count, reading_minutes, updated_at, created_at";
+
+async function selectPosts(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  build: (columns: string) => PromiseLike<{
+    data: unknown[] | null;
+    error: unknown;
+  }>,
+) {
+  const first = await build(POST_LIST_COLUMNS);
+  if (!first.error && first.data)
+    return first.data as Record<string, unknown>[];
+  const fallback = await build("*");
+  return (fallback.data ?? []) as Record<string, unknown>[];
+}
+
+async function readCounts(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+) {
+  const counts = new Map<string, number>();
+  const { data } = await supabase.rpc("get_post_read_counts");
+  if (Array.isArray(data)) {
+    for (const row of data as { post_slug: string; reads: number }[]) {
+      counts.set(row.post_slug, Number(row.reads) || 0);
+    }
+  }
+  return counts;
+}
+
+export const getPublishedPosts = cache(async (): Promise<PostListItem[]> => {
   if (!isSupabaseConfigured()) return [];
 
   try {
     const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("published", true)
-      .order("published_at", { ascending: false });
-
-    if (error || !data) return [];
-    return data.map((row) => mapPostList(row as Record<string, unknown>));
+    const [rows, reads] = await Promise.all([
+      selectPosts(supabase, (columns) =>
+        supabase
+          .from("posts")
+          .select(columns)
+          .eq("published", true)
+          .order("published_at", { ascending: false }),
+      ),
+      readCounts(supabase),
+    ]);
+    return rows.map((row) => ({
+      ...mapPostList(row),
+      readsCount: reads.get(String(row.slug)) ?? 0,
+    }));
   } catch {
     return [];
   }
-}
+});
 
-export async function getPublishedPost(
-  slug: string,
-): Promise<PostDetail | null> {
-  if (!isSupabaseConfigured()) return null;
+export const getPublishedPost = cache(
+  async (slug: string): Promise<PostDetail | null> => {
+    if (!isSupabaseConfigured()) return null;
 
-  try {
-    const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("slug", slug)
-      .eq("published", true)
-      .maybeSingle();
+    try {
+      const supabase = await createServerSupabaseClient();
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("slug", slug)
+        .eq("published", true)
+        .maybeSingle();
 
-    if (error || !data) return null;
-    const { data: reads } = await supabase.rpc("get_post_read_count", {
-      post_slug: slug,
-    });
-    return {
-      ...mapPostList(data as Record<string, unknown>),
-      readsCount: Number(reads) || 0,
-      contentHtml: data.content_html as string,
-    };
-  } catch {
-    return null;
-  }
-}
+      if (error || !data) return null;
+      const { data: reads } = await supabase.rpc("get_post_read_count", {
+        post_slug: slug,
+      });
+      return {
+        ...mapPostDetail(data as Record<string, unknown>),
+        readsCount: Number(reads) || 0,
+      };
+    } catch {
+      return null;
+    }
+  },
+);
 
 export async function listAdminProjects(): Promise<AdminProject[]> {
   const supabase = await createServerSupabaseClient();
@@ -343,12 +399,19 @@ export async function getAdminProject(
 
 export async function listAdminPosts(): Promise<AdminPost[]> {
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .order("updated_at", { ascending: false });
-  if (error || !data) return [];
-  return data.map((row) => mapAdminPost(row as Record<string, unknown>));
+  const [rows, reads] = await Promise.all([
+    selectPosts(supabase, (columns) =>
+      supabase
+        .from("posts")
+        .select(columns)
+        .order("updated_at", { ascending: false }),
+    ),
+    readCounts(supabase),
+  ]);
+  return rows.map((row) => ({
+    ...mapAdminPost(row),
+    readsCount: reads.get(String(row.slug)) ?? 0,
+  }));
 }
 
 export async function getAdminPost(id: string): Promise<AdminPost | null> {
@@ -464,9 +527,13 @@ export async function getAdminCounts() {
   };
 
   return {
-    projects: tally(projects.data as { id: string; published: boolean }[] | null),
+    projects: tally(
+      projects.data as { id: string; published: boolean }[] | null,
+    ),
     posts: tally(posts.data as { id: string; published: boolean }[] | null),
-    artworks: tally(artworks.data as { id: string; published: boolean }[] | null),
+    artworks: tally(
+      artworks.data as { id: string; published: boolean }[] | null,
+    ),
     books: tally(books.data as { id: string; published: boolean }[] | null),
   };
 }
@@ -480,5 +547,43 @@ export async function getSiteVisitorCount() {
     return Number(data) || 0;
   } catch {
     return 0;
+  }
+}
+
+export type PostFeedItem = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  tags: string[];
+  coverUrl: string | null;
+  publishedAt: string | null;
+  updatedAt: string | null;
+};
+
+/** Cookie-free read of published posts for sitemap and RSS (cacheable). */
+export async function getPostFeed(): Promise<PostFeedItem[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const { data, error } = await createAnonSupabaseClient()
+      .from("posts")
+      .select(
+        "slug, title, excerpt, category, tags, cover_url, published_at, updated_at",
+      )
+      .eq("published", true)
+      .order("published_at", { ascending: false });
+    if (error || !data) return [];
+    return data.map((row) => ({
+      slug: String(row.slug),
+      title: String(row.title ?? ""),
+      excerpt: String(row.excerpt ?? ""),
+      category: typeof row.category === "string" ? row.category : "",
+      tags: asStringArray(row.tags),
+      coverUrl: (row.cover_url as string | null) ?? null,
+      publishedAt: (row.published_at as string | null) ?? null,
+      updatedAt: (row.updated_at as string | null) ?? null,
+    }));
+  } catch {
+    return [];
   }
 }

@@ -24,18 +24,23 @@ import {
 } from "lucide-react";
 
 import { uploadMediaFile } from "@/lib/admin/actions";
+import { prepareImage } from "@/lib/admin/prepare-image";
+import { readingTimeMinutes, wordCount } from "@/lib/blog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function RichTextEditor({
   name,
   defaultHtml = "",
+  onChange,
 }: {
   name: string;
   defaultHtml?: string;
+  onChange?: (html: string) => void;
 }) {
   const [pending, startTransition] = useTransition();
   const [html, setHtml] = useState(defaultHtml);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -50,14 +55,56 @@ export function RichTextEditor({
     ],
     content: defaultHtml || "<p></p>",
     editorProps: {
+      handlePaste: (_view, event) => {
+        const file = [...(event.clipboardData?.files ?? [])].find((item) =>
+          item.type.startsWith("image/"),
+        );
+        if (!file) return false;
+        uploadImage(file);
+        return true;
+      },
+      handleDrop: (_view, event) => {
+        const file = [...(event.dataTransfer?.files ?? [])].find((item) =>
+          item.type.startsWith("image/"),
+        );
+        if (!file) return false;
+        event.preventDefault();
+        uploadImage(file);
+        return true;
+      },
       attributes: {
         class: "tiptap blog-content min-h-[22rem] px-4 py-3 sm:min-h-[28rem]",
       },
     },
     onUpdate: ({ editor: instance }) => {
-      setHtml(instance.getHTML());
+      const next = instance.getHTML();
+      setHtml(next);
+      onChange?.(next);
     },
   });
+
+  function uploadImage(original: File) {
+    if (!editor) return;
+    setUploadError(null);
+    startTransition(async () => {
+      try {
+        const file = await prepareImage(original);
+        const data = new FormData();
+        data.set("file", file);
+        data.set("folder", "posts");
+        const result = await uploadMediaFile(data);
+        if (result.url) {
+          editor.chain().focus().setImage({ src: result.url }).run();
+        } else {
+          setUploadError(result.error ?? "Image upload failed.");
+        }
+      } catch {
+        setUploadError(
+          "Image upload failed. Check your connection and try again.",
+        );
+      }
+    });
+  }
 
   useEffect(() => {
     if (editor && defaultHtml && editor.isEmpty) {
@@ -74,7 +121,15 @@ export function RichTextEditor({
       editor.chain().focus().unsetLink().run();
       return;
     }
-    editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
+    const normalized = /^(https?:|mailto:|\/|#)/i.test(href)
+      ? href
+      : `https://${href}`;
+    editor
+      .chain()
+      .focus()
+      .extendMarkRange("link")
+      .setLink({ href: normalized })
+      .run();
   }
 
   function addImage() {
@@ -83,40 +138,37 @@ export function RichTextEditor({
     input.accept = "image/*";
     input.onchange = () => {
       const file = input.files?.[0];
-      if (!file || !editor) return;
-      const data = new FormData();
-      data.set("file", file);
-      data.set("folder", "posts");
-      startTransition(async () => {
-        const result = await uploadMediaFile(data);
-        if (result.url) {
-          editor.chain().focus().setImage({ src: result.url }).run();
-        }
-      });
+      if (file) uploadImage(file);
     };
     input.click();
   }
 
   return (
     <div className="border-input bg-card overflow-hidden rounded-2xl border">
-      <div className="border-border bg-muted/30 sticky top-0 z-10 flex flex-wrap gap-0.5 border-b p-1.5">
+      <div className="border-border bg-muted/30 sticky top-0 z-10 flex gap-0.5 overflow-x-auto border-b p-1.5 sm:flex-wrap">
         <ToolbarButton
           active={editor?.isActive("heading", { level: 1 })}
-          onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+          onClick={() =>
+            editor?.chain().focus().toggleHeading({ level: 1 }).run()
+          }
           label="Heading 1"
         >
           <Heading1 className="size-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor?.isActive("heading", { level: 2 })}
-          onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor?.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           label="Heading 2"
         >
           <Heading2 className="size-4" />
         </ToolbarButton>
         <ToolbarButton
           active={editor?.isActive("heading", { level: 3 })}
-          onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() =>
+            editor?.chain().focus().toggleHeading({ level: 3 }).run()
+          }
           label="Heading 3"
         >
           <Heading3 className="size-4" />
@@ -180,10 +232,18 @@ export function RichTextEditor({
           <span className="font-mono text-[10px] font-semibold">{"{ }"}</span>
         </ToolbarButton>
         <Divider />
-        <ToolbarButton active={editor?.isActive("link")} onClick={addLink} label="Link">
+        <ToolbarButton
+          active={editor?.isActive("link")}
+          onClick={addLink}
+          label="Link"
+        >
           <LinkIcon className="size-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={addImage} label="Insert image" disabled={pending}>
+        <ToolbarButton
+          onClick={addImage}
+          label="Insert image"
+          disabled={pending}
+        >
           <ImageIcon className="size-4" />
         </ToolbarButton>
         <Divider />
@@ -201,10 +261,24 @@ export function RichTextEditor({
         </ToolbarButton>
       </div>
       {pending ? (
-        <p className="text-muted-foreground px-4 py-2 text-xs">Uploading image…</p>
+        <p className="text-muted-foreground px-4 py-2 text-xs">
+          Uploading image…
+        </p>
+      ) : null}
+      {uploadError ? (
+        <p role="alert" className="text-destructive px-4 py-2 text-xs">
+          {uploadError}
+        </p>
       ) : null}
       <EditorContent editor={editor} />
       <input type="hidden" name={name} value={html} />
+      <div className="border-border text-muted-foreground flex justify-between border-t px-4 py-2 text-xs">
+        <span>Tip: paste or drop images straight into the text.</span>
+        <span>
+          {wordCount(html).toLocaleString("en-US")} words ·{" "}
+          {readingTimeMinutes(html)} min read
+        </span>
+      </div>
     </div>
   );
 }
@@ -235,7 +309,10 @@ function ToolbarButton({
       title={label}
       disabled={disabled}
       onClick={onClick}
-      className={cn("size-9 sm:size-8", active && "bg-muted text-foreground")}
+      className={cn(
+        "size-9 shrink-0 sm:size-8",
+        active && "bg-muted text-foreground",
+      )}
     >
       {children}
     </Button>

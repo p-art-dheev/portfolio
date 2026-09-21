@@ -64,10 +64,13 @@ export type PostListItem = {
   category: string;
   readsCount: number;
   likesCount: number;
+  readingMinutes: number;
 };
 
 export type PostDetail = PostListItem & {
   contentHtml: string;
+  coverAlt: string;
+  updatedAt: string | null;
 };
 
 export type AdminProject = Project & {
@@ -77,19 +80,10 @@ export type AdminProject = Project & {
   sortOrder: number;
 };
 
-export type AdminPost = {
+export type AdminPost = PostDetail & {
   id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  contentHtml: string;
-  coverUrl: string | null;
   published: boolean;
-  publishedAt: string | null;
-  tags: string[];
-  category: string;
-  readsCount: number;
-  likesCount: number;
+  createdAt: string | null;
 };
 
 export type AdminArtwork = {

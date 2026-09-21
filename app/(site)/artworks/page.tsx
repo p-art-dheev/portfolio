@@ -5,7 +5,9 @@ import { getPublishedArtworks } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Artworks",
-  description: "Drawings and paintings in a masonry photogrid gallery.",
+  description: "Realism drawings and digital art by Pardheev Vatturu.",
+  alternates: { canonical: "/artworks" },
+  openGraph: { title: "Artworks", url: "/artworks" },
 };
 
 export default async function ArtworksRoute() {

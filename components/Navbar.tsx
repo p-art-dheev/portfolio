@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu } from "lucide-react";
@@ -34,6 +34,10 @@ function navLinkClass(isActive: boolean) {
 
 export function Navbar({ domain }: { domain: string }) {
   const [open, setOpen] = useState(false);
+  // Radix generates ids that differ between server and client render here, so
+  // the dropdown is only mounted after hydration (a look-alike button holds its place).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const pathname = usePathname();
   const moreActive = moreLinks.some((link) => pathname.startsWith(link.href));
 
@@ -62,66 +66,94 @@ export function Navbar({ domain }: { domain: string }) {
             );
           })}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className={cn(
-                  "text-muted-foreground cursor-pointer",
-                  moreActive && "text-foreground font-medium",
-                )}
-              >
-                More
-                <ChevronDown className="size-3.5 opacity-70" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-40">
-              {moreLinks.map((link) => (
-                <DropdownMenuItem key={link.href} asChild>
-                  <Link href={link.href}>{link.label}</Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {mounted ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "text-muted-foreground cursor-pointer",
+                    moreActive && "text-foreground font-medium",
+                  )}
+                >
+                  More
+                  <ChevronDown className="size-3.5 opacity-70" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-40">
+                {moreLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link href={link.href}>{link.label}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button
+              variant="ghost"
+              className={cn(
+                "text-muted-foreground cursor-pointer",
+                moreActive && "text-foreground font-medium",
+              )}
+            >
+              More
+              <ChevronDown className="size-3.5 opacity-70" />
+            </Button>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
 
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="sm:hidden"
-                aria-label="Open menu"
-              >
-                <Menu className="size-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-              <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-1 px-4" aria-label="Mobile">
-                {[...navLinks, ...moreLinks].map((link) => {
-                  const isActive =
-                    link.href === "/"
-                      ? pathname === "/"
-                      : pathname.startsWith(link.href);
+          {mounted ? (
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="sm:hidden"
+                  aria-label="Open menu"
+                >
+                  <Menu className="size-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-1 px-4" aria-label="Mobile">
+                  {[...navLinks, ...moreLinks].map((link) => {
+                    const isActive =
+                      link.href === "/"
+                        ? pathname === "/"
+                        : pathname.startsWith(link.href);
 
-                  return (
-                    <SheetClose key={link.href} asChild>
-                      <Link href={link.href} className={navLinkClass(isActive)}>
-                        {link.label}
-                      </Link>
-                    </SheetClose>
-                  );
-                })}
-              </nav>
-            </SheetContent>
-          </Sheet>
+                    return (
+                      <SheetClose key={link.href} asChild>
+                        <Link
+                          href={link.href}
+                          className={navLinkClass(isActive)}
+                        >
+                          {link.label}
+                        </Link>
+                      </SheetClose>
+                    );
+                  })}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="sm:hidden"
+              aria-label="Open menu"
+            >
+              <Menu className="size-4" />
+            </Button>
+          )}
         </div>
       </Container>
     </header>
