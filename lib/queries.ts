@@ -244,6 +244,34 @@ export async function getPublishedBooks(): Promise<BookItem[]> {
   }
 }
 
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function mapPostList(row: Record<string, unknown>): PostListItem {
+  return {
+    slug: String(row.slug ?? ""),
+    title: String(row.title ?? ""),
+    excerpt: String(row.excerpt ?? ""),
+    coverUrl: (row.cover_url as string | null) ?? null,
+    publishedAt: (row.published_at as string | null) ?? null,
+    tags: asStringArray(row.tags),
+    category: typeof row.category === "string" ? row.category : "",
+    viewsCount: Number(row.views_count) || 0,
+    likesCount: Number(row.likes_count) || 0,
+  };
+}
+
+function mapAdminPost(row: Record<string, unknown>): AdminPost {
+  return {
+    ...mapPostList(row),
+    id: String(row.id ?? ""),
+    contentHtml: String(row.content_html ?? ""),
+    published: Boolean(row.published),
+  };
+}
+
 export async function getPublishedPosts(): Promise<PostListItem[]> {
   if (!isSupabaseConfigured()) return [];
 
@@ -251,18 +279,12 @@ export async function getPublishedPosts(): Promise<PostListItem[]> {
     const supabase = await createServerSupabaseClient();
     const { data, error } = await supabase
       .from("posts")
-      .select("slug, title, excerpt, cover_url, published_at")
+      .select("*")
       .eq("published", true)
       .order("published_at", { ascending: false });
 
     if (error || !data) return [];
-    return data.map((row) => ({
-      slug: row.slug as string,
-      title: row.title as string,
-      excerpt: row.excerpt as string,
-      coverUrl: (row.cover_url as string | null) ?? null,
-      publishedAt: (row.published_at as string | null) ?? null,
-    }));
+    return data.map((row) => mapPostList(row as Record<string, unknown>));
   } catch {
     return [];
   }
@@ -284,11 +306,7 @@ export async function getPublishedPost(
 
     if (error || !data) return null;
     return {
-      slug: data.slug as string,
-      title: data.title as string,
-      excerpt: data.excerpt as string,
-      coverUrl: (data.cover_url as string | null) ?? null,
-      publishedAt: (data.published_at as string | null) ?? null,
+      ...mapPostList(data as Record<string, unknown>),
       contentHtml: data.content_html as string,
     };
   } catch {
@@ -326,16 +344,7 @@ export async function listAdminPosts(): Promise<AdminPost[]> {
     .select("*")
     .order("updated_at", { ascending: false });
   if (error || !data) return [];
-  return data.map((row) => ({
-    id: row.id as string,
-    slug: row.slug as string,
-    title: row.title as string,
-    excerpt: row.excerpt as string,
-    contentHtml: row.content_html as string,
-    coverUrl: (row.cover_url as string | null) ?? null,
-    published: row.published as boolean,
-    publishedAt: (row.published_at as string | null) ?? null,
-  }));
+  return data.map((row) => mapAdminPost(row as Record<string, unknown>));
 }
 
 export async function getAdminPost(id: string): Promise<AdminPost | null> {
@@ -346,16 +355,7 @@ export async function getAdminPost(id: string): Promise<AdminPost | null> {
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
-  return {
-    id: data.id as string,
-    slug: data.slug as string,
-    title: data.title as string,
-    excerpt: data.excerpt as string,
-    contentHtml: data.content_html as string,
-    coverUrl: (data.cover_url as string | null) ?? null,
-    published: data.published as boolean,
-    publishedAt: (data.published_at as string | null) ?? null,
-  };
+  return mapAdminPost(data as Record<string, unknown>);
 }
 
 export async function listAdminArtworks(): Promise<AdminArtwork[]> {

@@ -60,6 +60,10 @@ export type PostListItem = {
   excerpt: string;
   coverUrl: string | null;
   publishedAt: string | null;
+  tags: string[];
+  category: string;
+  viewsCount: number;
+  likesCount: number;
 };
 
 export type PostDetail = PostListItem & {
@@ -82,6 +86,10 @@ export type AdminPost = {
   coverUrl: string | null;
   published: boolean;
   publishedAt: string | null;
+  tags: string[];
+  category: string;
+  viewsCount: number;
+  likesCount: number;
 };
 
 export type AdminArtwork = {

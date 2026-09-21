@@ -141,6 +141,11 @@ export async function savePost(formData: FormData) {
     cover_url: optionalUrl(str(formData, "cover_url")),
     published,
     published_at: published ? new Date().toISOString() : null,
+    tags: str(formData, "tags")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean),
+    category: str(formData, "category"),
   };
 
   if (!title || !slug) {
@@ -162,12 +167,22 @@ export async function savePost(formData: FormData) {
     ? supabase.from("posts").update(payload).eq("id", id)
     : supabase.from("posts").insert(payload);
 
-  const { error } = await query;
+  let { error } = await query;
+  if (error?.message.includes("category") || error?.message.includes("tags")) {
+    const { tags, category, ...basic } = payload;
+    void tags;
+    void category;
+    const retry = id
+      ? supabase.from("posts").update(basic).eq("id", id)
+      : supabase.from("posts").insert(basic);
+    const retried = await retry;
+    error = retried.error;
+  }
   if (error) return { error: error.message };
 
   revalidatePublic();
   revalidatePath(`/blogs/${slug}`);
-  redirect("/admin/blogs");
+  redirect("/admin/blogs?saved=1");
 }
 
 export async function deletePost(formData: FormData) {

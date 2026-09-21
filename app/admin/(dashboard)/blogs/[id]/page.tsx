@@ -13,8 +13,13 @@ export default async function EditPostPage({
   if (!post) notFound();
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-semibold tracking-tight">Edit post</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Edit post</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
+          {post.published ? "This post is live." : "This post is still a draft."}
+        </p>
+      </div>
       <PostForm post={post} />
     </div>
   );

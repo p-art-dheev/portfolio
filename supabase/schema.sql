@@ -65,6 +65,10 @@ create table if not exists public.posts (
   cover_url text,
   published boolean not null default false,
   published_at timestamptz,
+  tags text[] not null default '{}',
+  category text not null default '',
+  views_count int not null default 0,
+  likes_count int not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -166,6 +170,43 @@ on public.posts for all
 to authenticated
 using (true)
 with check (true);
+
+create or replace function public.increment_post_views(post_slug text)
+returns int
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_count int;
+begin
+  update public.posts
+  set views_count = views_count + 1
+  where slug = post_slug and published = true
+  returning views_count into new_count;
+  return coalesce(new_count, 0);
+end;
+$$;
+
+create or replace function public.increment_post_likes(post_slug text)
+returns int
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_count int;
+begin
+  update public.posts
+  set likes_count = likes_count + 1
+  where slug = post_slug and published = true
+  returning likes_count into new_count;
+  return coalesce(new_count, 0);
+end;
+$$;
+
+grant execute on function public.increment_post_views(text) to anon, authenticated;
+grant execute on function public.increment_post_likes(text) to anon, authenticated;
 
 drop policy if exists "Public read published artworks" on public.artworks;
 create policy "Public read published artworks"
