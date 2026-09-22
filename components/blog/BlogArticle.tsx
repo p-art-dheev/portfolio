@@ -26,6 +26,7 @@ type ArticlePost = Pick<
   | "publishedAt"
   | "tags"
   | "category"
+  | "categoryColor"
   | "readsCount"
   | "likesCount"
   | "readingMinutes"
@@ -70,7 +71,7 @@ export function BlogArticle({
           {post.category ? (
             <TypeBadge
               label={post.category}
-              className={categoryTone(post.category)}
+              className={categoryTone(post.categoryColor)}
             />
           ) : null}
           {date ? (

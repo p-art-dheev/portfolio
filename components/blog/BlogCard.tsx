@@ -116,7 +116,7 @@ export function BlogCard({
           {post.category ? (
             <TypeBadge
               label={post.category}
-              className={categoryTone(post.category)}
+              className={categoryTone(post.categoryColor)}
             />
           ) : null}
           <Meta post={post} />
@@ -163,7 +163,7 @@ export function BlogCardFeatured({ post }: { post: PostListItem }) {
           {post.category ? (
             <TypeBadge
               label={post.category}
-              className={categoryTone(post.category)}
+              className={categoryTone(post.categoryColor)}
             />
           ) : null}
         </div>
@@ -209,7 +209,7 @@ export function BlogCardCompact({
       {post.category ? (
         <TypeBadge
           label={post.category}
-          className={cn("self-start", categoryTone(post.category))}
+          className={cn("self-start", categoryTone(post.categoryColor))}
         />
       ) : null}
       <p className="leading-snug font-medium tracking-tight">{post.title}</p>

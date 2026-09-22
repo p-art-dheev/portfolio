@@ -5,7 +5,8 @@ import { Search, X } from "lucide-react";
 
 import { BlogCard, BlogCardFeatured } from "@/components/blog/BlogCard";
 import { Button } from "@/components/ui/button";
-import type { PostListItem } from "@/lib/content-types";
+import { categoryDot } from "@/lib/blog";
+import type { BlogCategory, PostListItem } from "@/lib/content-types";
 import { cn } from "@/lib/utils";
 
 function matches(post: PostListItem, query: string) {
@@ -17,7 +18,14 @@ function matches(post: PostListItem, query: string) {
     .includes(needle);
 }
 
-export function BlogList({ posts }: { posts: PostListItem[] }) {
+export function BlogList({
+  posts,
+  categories: managedCategories,
+}: {
+  posts: PostListItem[];
+  /** For chip order + color; only categories with a published post show as chips. */
+  categories: BlogCategory[];
+}) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
 
@@ -34,8 +42,21 @@ export function BlogList({ posts }: { posts: PostListItem[] }) {
       if (post.category)
         counts.set(post.category, (counts.get(post.category) ?? 0) + 1);
     }
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  }, [posts]);
+    const order = new Map(
+      managedCategories.map((c, index) => [c.name.toLowerCase(), index]),
+    );
+    const colors = new Map(
+      managedCategories.map((c) => [c.name.toLowerCase(), c.color]),
+    );
+    return [...counts.entries()]
+      .map(([name, count]) => ({
+        name,
+        count,
+        color: colors.get(name.toLowerCase()) ?? null,
+        order: order.get(name.toLowerCase()) ?? Infinity,
+      }))
+      .sort((a, b) => a.order - b.order || b.count - a.count);
+  }, [posts, managedCategories]);
 
   const filtered = posts.filter(
     (post) => (!category || post.category === category) && matches(post, query),
@@ -78,12 +99,19 @@ export function BlogList({ posts }: { posts: PostListItem[] }) {
                   {posts.length}
                 </span>
               </Chip>
-              {categories.map(([name, count]) => (
+              {categories.map(({ name, count, color }) => (
                 <Chip
                   key={name}
                   active={category === name}
                   onClick={() => update(query, category === name ? "" : name)}
                 >
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "mr-1.5 size-1.5 rounded-full",
+                      categoryDot(color),
+                    )}
+                  />
                   {name}
                   <span className="text-muted-foreground ml-1.5">{count}</span>
                 </Chip>

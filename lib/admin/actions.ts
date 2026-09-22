@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { isAdminUser } from "@/lib/admin/auth";
-import { excerptFromHtml, normalizeTags, readingTimeMinutes } from "@/lib/blog";
+import {
+  excerptFromHtml,
+  isCategoryColor,
+  normalizeTags,
+  readingTimeMinutes,
+} from "@/lib/blog";
 import { sanitizePostHtml } from "@/lib/sanitize";
 import { slugify } from "@/lib/slug";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -288,8 +293,156 @@ export async function deletePost(formData: FormData) {
     .maybeSingle();
   const { error } = await supabase.from("posts").delete().eq("id", id);
   if (error) return { error: error.message };
+  if (post?.slug) {
+    // Reader/like rows are keyed by slug, not post id: clean them up so a
+    // reused slug doesn't inherit the deleted post's counts. Best-effort —
+    // older databases without migrate-blog-v2.sql's policies just no-op here.
+    await supabase.from("post_readers").delete().eq("post_slug", post.slug);
+    await supabase.from("post_likes").delete().eq("post_slug", post.slug);
+  }
   revalidatePostPages(post?.slug as string | undefined);
   redirect("/admin/blogs?deleted=1");
+}
+
+export type CategoryActionResult = { error?: string; id?: string };
+
+function revalidateCategories() {
+  revalidatePublic();
+  revalidatePath("/admin/blogs");
+  revalidatePath("/admin/blogs/categories");
+}
+
+export async function createBlogCategory(
+  formData: FormData,
+): Promise<CategoryActionResult> {
+  const supabase = await requireAdmin();
+  const name = str(formData, "name").slice(0, 40);
+  const color = isCategoryColor(str(formData, "color"))
+    ? str(formData, "color")
+    : "slate";
+  if (!name) return { error: "Name is required." };
+
+  const { count } = await supabase
+    .from("blog_categories")
+    .select("id", { count: "exact", head: true });
+  const { data, error } = await supabase
+    .from("blog_categories")
+    .insert({ name, color, sort_order: count ?? 0 })
+    .select("id")
+    .single();
+  if (error) {
+    if (error.code === "23505") return { error: `"${name}" already exists.` };
+    return { error: error.message };
+  }
+
+  revalidateCategories();
+  return { id: data.id as string };
+}
+
+export async function renameBlogCategory(
+  formData: FormData,
+): Promise<CategoryActionResult> {
+  const supabase = await requireAdmin();
+  const id = str(formData, "id");
+  const name = str(formData, "name").slice(0, 40);
+  const color = isCategoryColor(str(formData, "color"))
+    ? str(formData, "color")
+    : "slate";
+  if (!id) return { error: "Missing category." };
+  if (!name) return { error: "Name is required." };
+
+  const { data: existing } = await supabase
+    .from("blog_categories")
+    .select("name")
+    .eq("id", id)
+    .maybeSingle();
+  if (!existing) return { error: "This category no longer exists." };
+
+  const { error } = await supabase
+    .from("blog_categories")
+    .update({ name, color })
+    .eq("id", id);
+  if (error) {
+    if (error.code === "23505") return { error: `"${name}" already exists.` };
+    return { error: error.message };
+  }
+
+  if (existing.name !== name) {
+    // posts.category is plain text, not a foreign key: keep existing posts
+    // pointed at the renamed category.
+    await supabase
+      .from("posts")
+      .update({ category: name })
+      .eq("category", existing.name);
+  }
+
+  revalidateCategories();
+  return { id };
+}
+
+export async function deleteBlogCategory(
+  formData: FormData,
+): Promise<CategoryActionResult> {
+  const supabase = await requireAdmin();
+  const id = str(formData, "id");
+  const { data: existing } = await supabase
+    .from("blog_categories")
+    .select("name")
+    .eq("id", id)
+    .maybeSingle();
+  if (!existing) return { error: "This category no longer exists." };
+
+  const { error } = await supabase
+    .from("blog_categories")
+    .delete()
+    .eq("id", id);
+  if (error) return { error: error.message };
+
+  // Posts that used it fall back to Uncategorized rather than pointing at a
+  // category that no longer exists.
+  await supabase
+    .from("posts")
+    .update({ category: "" })
+    .eq("category", existing.name);
+
+  revalidateCategories();
+  return {};
+}
+
+export async function moveBlogCategory(
+  formData: FormData,
+): Promise<CategoryActionResult> {
+  const supabase = await requireAdmin();
+  const id = str(formData, "id");
+  const direction = str(formData, "direction");
+
+  const { data: rows } = await supabase
+    .from("blog_categories")
+    .select("id, sort_order")
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
+  if (!rows) return { error: "Could not load categories." };
+
+  const index = rows.findIndex((row) => row.id === id);
+  const swapWith = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || swapWith < 0 || swapWith >= rows.length) return {};
+
+  const a = rows[index];
+  const b = rows[swapWith];
+  const [{ error: errorA }, { error: errorB }] = await Promise.all([
+    supabase
+      .from("blog_categories")
+      .update({ sort_order: b.sort_order })
+      .eq("id", a.id),
+    supabase
+      .from("blog_categories")
+      .update({ sort_order: a.sort_order })
+      .eq("id", b.id),
+  ]);
+  if (errorA || errorB) return { error: (errorA ?? errorB)?.message };
+
+  revalidateCategories();
+  return {};
 }
 
 export async function saveArtwork(formData: FormData) {

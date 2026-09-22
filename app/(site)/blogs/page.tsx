@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { BlogsPage } from "@/components/BlogsPage";
-import { getPublishedPosts } from "@/lib/queries";
+import { getBlogCategories, getPublishedPosts } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -15,6 +15,9 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogsRoute() {
-  const posts = await getPublishedPosts();
-  return <BlogsPage posts={posts} />;
+  const [posts, categories] = await Promise.all([
+    getPublishedPosts(),
+    getBlogCategories(),
+  ]);
+  return <BlogsPage posts={posts} categories={categories} />;
 }

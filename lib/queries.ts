@@ -8,6 +8,7 @@ import type {
   AdminPost,
   AdminProject,
   ArtworkItem,
+  BlogCategory,
   BookItem,
   PostDetail,
   PostListItem,
@@ -253,9 +254,16 @@ function asStringArray(value: unknown): string[] {
   return value.filter((item): item is string => typeof item === "string");
 }
 
-function mapPostList(row: Record<string, unknown>): PostListItem {
+/** Category name (lowercased) -> color, for tagging posts at read time. */
+type CategoryColorMap = Map<string, string>;
+
+function mapPostList(
+  row: Record<string, unknown>,
+  colors?: CategoryColorMap,
+): PostListItem {
   const content =
     typeof row.content_html === "string" ? row.content_html : null;
+  const category = typeof row.category === "string" ? row.category : "";
   return {
     slug: String(row.slug ?? ""),
     title: String(row.title ?? ""),
@@ -263,7 +271,10 @@ function mapPostList(row: Record<string, unknown>): PostListItem {
     coverUrl: (row.cover_url as string | null) ?? null,
     publishedAt: (row.published_at as string | null) ?? null,
     tags: asStringArray(row.tags),
-    category: typeof row.category === "string" ? row.category : "",
+    category,
+    categoryColor: category
+      ? (colors?.get(category.toLowerCase()) ?? null)
+      : null,
     readsCount: Number(row.reads_count) || 0,
     likesCount: Number(row.likes_count) || 0,
     readingMinutes:
@@ -275,22 +286,57 @@ function mapPostList(row: Record<string, unknown>): PostListItem {
   };
 }
 
-function mapPostDetail(row: Record<string, unknown>): PostDetail {
+function mapPostDetail(
+  row: Record<string, unknown>,
+  colors?: CategoryColorMap,
+): PostDetail {
   return {
-    ...mapPostList(row),
+    ...mapPostList(row, colors),
     contentHtml: String(row.content_html ?? ""),
     coverAlt: String(row.cover_alt ?? ""),
     updatedAt: (row.updated_at as string | null) ?? null,
   };
 }
 
-function mapAdminPost(row: Record<string, unknown>): AdminPost {
+function mapAdminPost(
+  row: Record<string, unknown>,
+  colors?: CategoryColorMap,
+): AdminPost {
   return {
-    ...mapPostDetail(row),
+    ...mapPostDetail(row, colors),
     id: String(row.id ?? ""),
     published: Boolean(row.published),
     createdAt: (row.created_at as string | null) ?? null,
   };
+}
+
+function toBlogCategory(row: Record<string, unknown>): BlogCategory {
+  return {
+    id: String(row.id ?? ""),
+    name: String(row.name ?? ""),
+    color: String(row.color ?? "slate"),
+    sortOrder: Number(row.sort_order) || 0,
+  };
+}
+
+/** Public, cached: the managed category list, ordered for display. */
+export const getBlogCategories = cache(async (): Promise<BlogCategory[]> => {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const { data, error } = await createAnonSupabaseClient()
+      .from("blog_categories")
+      .select("id, name, color, sort_order")
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true });
+    if (error || !data) return [];
+    return data.map((row) => toBlogCategory(row as Record<string, unknown>));
+  } catch {
+    return [];
+  }
+});
+
+function categoryColorMap(categories: BlogCategory[]): CategoryColorMap {
+  return new Map(categories.map((c) => [c.name.toLowerCase(), c.color]));
 }
 
 // List views never need the (large) body. The stored reading_minutes column
@@ -333,7 +379,7 @@ export const getPublishedPosts = cache(async (): Promise<PostListItem[]> => {
     // can be prerendered by generateStaticParams instead of erroring at
     // request time ("Page changed from static to dynamic ... reason: cookies").
     const supabase = createAnonSupabaseClient();
-    const [rows, reads] = await Promise.all([
+    const [rows, reads, categories] = await Promise.all([
       selectPosts(supabase, (columns) =>
         supabase
           .from("posts")
@@ -342,9 +388,11 @@ export const getPublishedPosts = cache(async (): Promise<PostListItem[]> => {
           .order("published_at", { ascending: false }),
       ),
       readCounts(supabase),
+      getBlogCategories(),
     ]);
+    const colors = categoryColorMap(categories);
     return rows.map((row) => ({
-      ...mapPostList(row),
+      ...mapPostList(row, colors),
       readsCount: reads.get(String(row.slug)) ?? 0,
     }));
   } catch {
@@ -366,11 +414,15 @@ export const getPublishedPost = cache(
         .maybeSingle();
 
       if (error || !data) return null;
-      const { data: reads } = await supabase.rpc("get_post_read_count", {
-        post_slug: slug,
-      });
+      const [{ data: reads }, categories] = await Promise.all([
+        supabase.rpc("get_post_read_count", { post_slug: slug }),
+        getBlogCategories(),
+      ]);
       return {
-        ...mapPostDetail(data as Record<string, unknown>),
+        ...mapPostDetail(
+          data as Record<string, unknown>,
+          categoryColorMap(categories),
+        ),
         readsCount: Number(reads) || 0,
       };
     } catch {
@@ -404,7 +456,7 @@ export async function getAdminProject(
 
 export async function listAdminPosts(): Promise<AdminPost[]> {
   const supabase = await createServerSupabaseClient();
-  const [rows, reads] = await Promise.all([
+  const [rows, reads, categories] = await Promise.all([
     selectPosts(supabase, (columns) =>
       supabase
         .from("posts")
@@ -412,22 +464,54 @@ export async function listAdminPosts(): Promise<AdminPost[]> {
         .order("updated_at", { ascending: false }),
     ),
     readCounts(supabase),
+    getBlogCategories(),
   ]);
+  const colors = categoryColorMap(categories);
   return rows.map((row) => ({
-    ...mapAdminPost(row),
+    ...mapAdminPost(row, colors),
     readsCount: reads.get(String(row.slug)) ?? 0,
   }));
 }
 
 export async function getAdminPost(id: string): Promise<AdminPost | null> {
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data, error }, categories] = await Promise.all([
+    supabase.from("posts").select("*").eq("id", id).maybeSingle(),
+    getBlogCategories(),
+  ]);
   if (error || !data) return null;
-  return mapAdminPost(data as Record<string, unknown>);
+  return mapAdminPost(
+    data as Record<string, unknown>,
+    categoryColorMap(categories),
+  );
+}
+
+/** Admin category management: the managed list plus how many posts use each. */
+export async function getAdminBlogCategories(): Promise<BlogCategory[]> {
+  const supabase = await createServerSupabaseClient();
+  const [{ data: categoryRows, error }, { data: postRows }] = await Promise.all(
+    [
+      supabase
+        .from("blog_categories")
+        .select("id, name, color, sort_order")
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true }),
+      supabase.from("posts").select("category"),
+    ],
+  );
+  if (error || !categoryRows) return [];
+
+  const counts = new Map<string, number>();
+  for (const row of (postRows ?? []) as { category: string | null }[]) {
+    const name = (row.category ?? "").trim().toLowerCase();
+    if (!name) continue;
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+
+  return categoryRows.map((row) => ({
+    ...toBlogCategory(row as Record<string, unknown>),
+    postCount: counts.get(String(row.name).toLowerCase()) ?? 0,
+  }));
 }
 
 export async function listAdminArtworks(): Promise<AdminArtwork[]> {

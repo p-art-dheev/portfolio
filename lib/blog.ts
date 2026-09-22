@@ -1,13 +1,3 @@
-export const BLOG_CATEGORIES = [
-  "Development",
-  "AI",
-  "Design",
-  "Personal",
-  "Notes",
-] as const;
-
-export type BlogCategory = (typeof BLOG_CATEGORIES)[number];
-
 export function htmlToText(html: string) {
   return html
     .replace(/<[^>]+>/g, " ")
@@ -115,17 +105,62 @@ export function relatedPosts<
     .map(({ item }) => item);
 }
 
-export function categoryTone(category: string) {
-  switch (category) {
-    case "Development":
-      return "bg-sky-500/15 text-sky-700 dark:text-sky-300";
-    case "AI":
-      return "bg-violet-500/15 text-violet-700 dark:text-violet-300";
-    case "Design":
-      return "bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-300";
-    case "Personal":
-      return "bg-amber-500/15 text-amber-700 dark:text-amber-300";
-    default:
-      return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
-  }
+/** Fixed swatch palette categories are colored from — pick one per category. */
+export const CATEGORY_COLORS = [
+  "sky",
+  "violet",
+  "fuchsia",
+  "amber",
+  "emerald",
+  "rose",
+  "teal",
+  "indigo",
+  "orange",
+  "slate",
+] as const;
+
+export type CategoryColor = (typeof CATEGORY_COLORS)[number];
+
+export function isCategoryColor(value: string): value is CategoryColor {
+  return (CATEGORY_COLORS as readonly string[]).includes(value);
+}
+
+const CATEGORY_TONE_CLASSES: Record<CategoryColor, string> = {
+  sky: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
+  violet: "bg-violet-500/15 text-violet-700 dark:text-violet-300",
+  fuchsia: "bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-300",
+  amber: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+  emerald: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  rose: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
+  teal: "bg-teal-500/15 text-teal-700 dark:text-teal-300",
+  indigo: "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300",
+  orange: "bg-orange-500/15 text-orange-700 dark:text-orange-300",
+  slate: "bg-slate-500/15 text-slate-700 dark:text-slate-300",
+};
+
+/** Tailwind classes for a category's badge, from its stored color name. */
+export function categoryTone(color: string | null | undefined) {
+  return CATEGORY_TONE_CLASSES[
+    isCategoryColor(color ?? "") ? (color as CategoryColor) : "slate"
+  ];
+}
+
+const CATEGORY_DOT_CLASSES: Record<CategoryColor, string> = {
+  sky: "bg-sky-500",
+  violet: "bg-violet-500",
+  fuchsia: "bg-fuchsia-500",
+  amber: "bg-amber-500",
+  emerald: "bg-emerald-500",
+  rose: "bg-rose-500",
+  teal: "bg-teal-500",
+  indigo: "bg-indigo-500",
+  orange: "bg-orange-500",
+  slate: "bg-slate-500",
+};
+
+/** Solid swatch color for a category color picker. */
+export function categoryDot(color: string | null | undefined) {
+  return CATEGORY_DOT_CLASSES[
+    isCategoryColor(color ?? "") ? (color as CategoryColor) : "slate"
+  ];
 }

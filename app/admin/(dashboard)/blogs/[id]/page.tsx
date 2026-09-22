@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 import { BookOpen, ExternalLink, Heart } from "lucide-react";
 
 import { PostForm } from "@/components/admin/PostForm";
-import { getAdminPost, getSiteSettings } from "@/lib/queries";
+import {
+  getAdminPost,
+  getBlogCategories,
+  getSiteSettings,
+} from "@/lib/queries";
 
 export default async function EditPostPage({
   params,
@@ -13,7 +17,11 @@ export default async function EditPostPage({
   searchParams: Promise<{ saved?: string }>;
 }) {
   const [{ id }, { saved }] = await Promise.all([params, searchParams]);
-  const [post, site] = await Promise.all([getAdminPost(id), getSiteSettings()]);
+  const [post, site, categories] = await Promise.all([
+    getAdminPost(id),
+    getSiteSettings(),
+    getBlogCategories(),
+  ]);
   if (!post) notFound();
 
   const notice =
@@ -55,7 +63,13 @@ export default async function EditPostPage({
           </div>
         ) : null}
       </div>
-      <PostForm key={post.id} post={post} site={site} notice={notice} />
+      <PostForm
+        key={post.id}
+        post={post}
+        site={site}
+        categories={categories}
+        notice={notice}
+      />
     </div>
   );
 }

@@ -80,6 +80,12 @@ export default async function AdminBlogsPage({
         actionHref="/admin/blogs/new"
         actionLabel="New post"
       />
+      <Link
+        href="/admin/blogs/categories"
+        className="text-muted-foreground hover:text-foreground -mt-3 inline-flex items-center gap-1 text-sm underline underline-offset-2"
+      >
+        Manage categories
+      </Link>
       <SavedBanner show={saved === "1"} />
       {deleted === "1" ? (
         <p className="border-border bg-muted/40 rounded-xl border px-3 py-2 text-sm">
@@ -177,7 +183,7 @@ export default async function AdminBlogsPage({
                       {post.category ? (
                         <TypeBadge
                           label={post.category}
-                          className={categoryTone(post.category)}
+                          className={categoryTone(post.categoryColor)}
                         />
                       ) : null}
                       <span className="text-muted-foreground text-xs">

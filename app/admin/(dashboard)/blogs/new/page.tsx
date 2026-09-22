@@ -1,8 +1,11 @@
 import { PostForm } from "@/components/admin/PostForm";
-import { getSiteSettings } from "@/lib/queries";
+import { getBlogCategories, getSiteSettings } from "@/lib/queries";
 
 export default async function NewPostPage() {
-  const site = await getSiteSettings();
+  const [site, categories] = await Promise.all([
+    getSiteSettings(),
+    getBlogCategories(),
+  ]);
   return (
     <div className="space-y-6">
       <div>
@@ -11,7 +14,7 @@ export default async function NewPostPage() {
           Save as a draft any time. Nothing goes public until you press Publish.
         </p>
       </div>
-      <PostForm site={site} />
+      <PostForm site={site} categories={categories} />
     </div>
   );
 }

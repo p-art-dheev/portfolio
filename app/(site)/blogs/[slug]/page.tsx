@@ -101,9 +101,7 @@ export default async function BlogPostPage({ params }: Props) {
     <Container className="py-10 sm:py-16">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <BlogArticle
         post={post}

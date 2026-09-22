@@ -62,9 +62,20 @@ export type PostListItem = {
   publishedAt: string | null;
   tags: string[];
   category: string;
+  /** Color of `category` at read time, resolved from BlogCategory; null if unset or the category was deleted. */
+  categoryColor: string | null;
   readsCount: number;
   likesCount: number;
   readingMinutes: number;
+};
+
+export type BlogCategory = {
+  id: string;
+  name: string;
+  color: string;
+  sortOrder: number;
+  /** Present only where the query bothers to count (admin category management). */
+  postCount?: number;
 };
 
 export type PostDetail = PostListItem & {

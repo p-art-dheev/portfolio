@@ -161,3 +161,20 @@ begin
   revoke execute on function public.increment_post_views(text) from anon, authenticated;
 exception when undefined_function then null;
 end $$;
+
+-- Admin cleanup: deleting a post used to leave its reader/like rows behind.
+-- If that slug is ever reused, the new post would silently inherit the old
+-- counts. These match the "Admin write posts" policy already on public.posts.
+drop policy if exists "Admin write post readers" on public.post_readers;
+create policy "Admin write post readers"
+on public.post_readers for all
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Admin write post likes" on public.post_likes;
+create policy "Admin write post likes"
+on public.post_likes for all
+to authenticated
+using (true)
+with check (true);

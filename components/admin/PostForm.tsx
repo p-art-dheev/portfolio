@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 
 import { savePost } from "@/lib/admin/actions";
-import { BLOG_CATEGORIES, normalizeTags, readingTimeMinutes } from "@/lib/blog";
+import { normalizeTags, readingTimeMinutes } from "@/lib/blog";
 import { slugify } from "@/lib/slug";
-import type { AdminPost, SiteContent } from "@/lib/content-types";
+import type { AdminPost, BlogCategory, SiteContent } from "@/lib/content-types";
+import { CategoryPicker } from "@/components/admin/CategoryPicker";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { PublishBadge } from "@/components/admin/StatusBadge";
@@ -33,10 +34,12 @@ const EXCERPT_MAX = 200;
 export function PostForm({
   post,
   site,
+  categories: initialCategories,
   notice,
 }: {
   post?: AdminPost;
   site: Pick<SiteContent, "name" | "role" | "avatars">;
+  categories: BlogCategory[];
   notice?: string;
 }) {
   const router = useRouter();
@@ -46,6 +49,7 @@ export function PostForm({
   const [tab, setTab] = useState<"write" | "preview">("write");
   const [title, setTitle] = useState(post?.title ?? "");
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? "");
+  const [categories, setCategories] = useState(initialCategories);
   const [category, setCategory] = useState(post?.category ?? "");
   const [tags, setTags] = useState(post?.tags.join(", ") ?? "");
   const [slug, setSlug] = useState(post?.slug ?? "");
@@ -156,6 +160,9 @@ export function PostForm({
     publishedAt: post?.publishedAt ?? null,
     tags: normalizeTags(tags),
     category,
+    categoryColor:
+      categories.find((c) => c.name.toLowerCase() === category.toLowerCase())
+        ?.color ?? null,
     readsCount: 0,
     likesCount: 0,
     readingMinutes: readingTimeMinutes(html),
@@ -315,21 +322,29 @@ export function PostForm({
           <h2 className="text-sm font-medium">Details</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <select
+              <div className="flex items-baseline justify-between">
+                <Label htmlFor="category">Category</Label>
+                <Link
+                  href="/admin/blogs/categories"
+                  target="_blank"
+                  className="text-muted-foreground hover:text-foreground text-xs"
+                >
+                  Manage categories
+                </Link>
+              </div>
+              <CategoryPicker
                 id="category"
                 name="category"
+                categories={categories}
                 value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                className="border-input bg-background h-11 w-full rounded-lg border px-3 text-sm"
-              >
-                <option value="">Uncategorized</option>
-                {BLOG_CATEGORIES.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+                onChange={(name) => {
+                  setCategory(name);
+                  setDirty(true);
+                }}
+                onCategoryCreated={(created) =>
+                  setCategories((prev) => [...prev, created])
+                }
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="tags">Tags</Label>

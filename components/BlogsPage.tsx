@@ -1,9 +1,15 @@
 import { Container } from "@/components/Container";
 import { BlogCardSkeleton } from "@/components/blog/BlogCard";
 import { BlogList } from "@/components/blog/BlogList";
-import type { PostListItem } from "@/lib/content-types";
+import type { BlogCategory, PostListItem } from "@/lib/content-types";
 
-export function BlogsPage({ posts }: { posts: PostListItem[] }) {
+export function BlogsPage({
+  posts,
+  categories,
+}: {
+  posts: PostListItem[];
+  categories: BlogCategory[];
+}) {
   return (
     <Container className="py-12 sm:py-16">
       <header>
@@ -25,7 +31,7 @@ export function BlogsPage({ posts }: { posts: PostListItem[] }) {
           </p>
         </div>
       ) : (
-        <BlogList posts={posts} />
+        <BlogList posts={posts} categories={categories} />
       )}
     </Container>
   );
