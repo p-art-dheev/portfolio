@@ -125,7 +125,9 @@ export const getSiteSettings = cache(async (): Promise<SiteContent> => {
   if (!isSupabaseConfigured()) return fallbackSite();
 
   try {
-    const supabase = await createServerSupabaseClient();
+    // Public read, no auth needed: keep this off the cookie-based client so
+    // the page can be statically rendered instead of forced dynamic.
+    const supabase = createAnonSupabaseClient();
     const { data, error } = await supabase
       .from("site_settings")
       .select("*")
@@ -158,7 +160,7 @@ export async function getPublishedProjects(): Promise<Project[]> {
   if (!isSupabaseConfigured()) return featuredProjects;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createAnonSupabaseClient();
     const { data, error } = await supabase
       .from("projects")
       .select("*")
@@ -176,7 +178,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
   if (!isSupabaseConfigured()) return featuredProjects;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createAnonSupabaseClient();
     const { data, error } = await supabase
       .from("projects")
       .select("*")
@@ -195,7 +197,7 @@ export async function getPublishedArtworks(): Promise<ArtworkItem[]> {
   if (!isSupabaseConfigured()) return fallbackArtworks;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createAnonSupabaseClient();
     const { data, error } = await supabase
       .from("artworks")
       .select("*")
@@ -223,7 +225,7 @@ export async function getPublishedBooks(): Promise<BookItem[]> {
   if (!isSupabaseConfigured()) return fallbackBooks;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createAnonSupabaseClient();
     const { data, error } = await supabase
       .from("books")
       .select("*")
@@ -297,7 +299,7 @@ const POST_LIST_COLUMNS =
   "id, slug, title, excerpt, cover_url, published, published_at, tags, category, likes_count, reading_minutes, updated_at, created_at";
 
 async function selectPosts(
-  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  supabase: ReturnType<typeof createAnonSupabaseClient>,
   build: (columns: string) => PromiseLike<{
     data: unknown[] | null;
     error: unknown;
@@ -311,7 +313,7 @@ async function selectPosts(
 }
 
 async function readCounts(
-  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  supabase: ReturnType<typeof createAnonSupabaseClient>,
 ) {
   const counts = new Map<string, number>();
   const { data } = await supabase.rpc("get_post_read_counts");
@@ -327,7 +329,10 @@ export const getPublishedPosts = cache(async (): Promise<PostListItem[]> => {
   if (!isSupabaseConfigured()) return [];
 
   try {
-    const supabase = await createServerSupabaseClient();
+    // Public read: the anon client has no cookies() dependency, so this page
+    // can be prerendered by generateStaticParams instead of erroring at
+    // request time ("Page changed from static to dynamic ... reason: cookies").
+    const supabase = createAnonSupabaseClient();
     const [rows, reads] = await Promise.all([
       selectPosts(supabase, (columns) =>
         supabase
@@ -352,7 +357,7 @@ export const getPublishedPost = cache(
     if (!isSupabaseConfigured()) return null;
 
     try {
-      const supabase = await createServerSupabaseClient();
+      const supabase = createAnonSupabaseClient();
       const { data, error } = await supabase
         .from("posts")
         .select("*")
