@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowUpRight, Globe } from "lucide-react";
 
 import { saveProject } from "@/lib/admin/actions";
 import { slugify } from "@/lib/slug";
 import type { AdminProject } from "@/lib/content-types";
+import { Github } from "@/components/icons";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 export function ProjectForm({ project }: { project?: AdminProject }) {
   const [error, setError] = useState<string | null>(null);
   const [slug, setSlug] = useState(project?.slug ?? "");
+  const [liveUrl, setLiveUrl] = useState(project?.liveUrl ?? "");
+  const [liveLabel, setLiveLabel] = useState(project?.liveLabel ?? "");
 
   async function action(formData: FormData) {
     const result = await saveProject(formData);
@@ -58,15 +62,65 @@ export function ProjectForm({ project }: { project?: AdminProject }) {
         defaultUrl={project?.banner}
       />
       <Field label="Tags (comma separated)" htmlFor="tags">
-        <Input
-          id="tags"
-          name="tags"
-          defaultValue={project?.tags.join(", ")}
-        />
+        <Input id="tags" name="tags" defaultValue={project?.tags.join(", ")} />
       </Field>
-      <Field label="Project URL" htmlFor="href">
-        <Input id="href" name="href" defaultValue={project?.href} />
-      </Field>
+      <fieldset className="border-border space-y-4 rounded-2xl border p-4">
+        <legend className="px-1 text-sm font-medium">Links</legend>
+        <p className="text-muted-foreground -mt-1 text-xs">
+          Leave a URL empty to hide its button on the card.
+        </p>
+        <Field label="GitHub repository URL" htmlFor="github_url">
+          <div className="relative">
+            <Github className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+            <Input
+              id="github_url"
+              name="github_url"
+              type="text"
+              inputMode="url"
+              placeholder="https://github.com/p-art-dheev/repo"
+              defaultValue={project?.githubUrl}
+              className="pl-9"
+            />
+          </div>
+        </Field>
+        <div className="grid gap-4 sm:grid-cols-[1fr_12rem]">
+          <Field label="Live / deployed URL" htmlFor="live_url">
+            <div className="relative">
+              <Globe className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+              <Input
+                id="live_url"
+                name="live_url"
+                type="text"
+                inputMode="url"
+                placeholder="https://project.vercel.app"
+                value={liveUrl}
+                onChange={(event) => setLiveUrl(event.target.value)}
+                className="pl-9"
+              />
+            </div>
+          </Field>
+          <Field label="Live button text" htmlFor="live_label">
+            <Input
+              id="live_label"
+              name="live_label"
+              maxLength={40}
+              placeholder="Live demo"
+              value={liveLabel}
+              onChange={(event) => setLiveLabel(event.target.value)}
+              disabled={!liveUrl.trim()}
+            />
+          </Field>
+        </div>
+        {liveUrl.trim() ? (
+          <p className="text-muted-foreground flex items-center gap-2 text-xs">
+            Card button preview:
+            <span className="bg-primary text-primary-foreground inline-flex h-7 items-center gap-1 rounded-lg px-2.5 text-xs font-medium">
+              {liveLabel.trim() || "Live demo"}
+              <ArrowUpRight className="size-3" />
+            </span>
+          </p>
+        ) : null}
+      </fieldset>
       <Field label="Status" htmlFor="status">
         <select
           id="status"
@@ -78,14 +132,6 @@ export function ProjectForm({ project }: { project?: AdminProject }) {
           <option value="live">Live</option>
           <option value="Building">Building</option>
         </select>
-      </Field>
-      <Field label="Sort order" htmlFor="sort_order">
-        <Input
-          id="sort_order"
-          name="sort_order"
-          type="number"
-          defaultValue={project?.sortOrder ?? 0}
-        />
       </Field>
       <label className="flex items-center gap-2 text-sm">
         <input

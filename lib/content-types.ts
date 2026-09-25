@@ -8,7 +8,10 @@ export type Project = {
   description: string;
   banner?: string;
   tags: string[];
-  href?: string;
+  githubUrl?: string;
+  liveUrl?: string;
+  /** Text on the live-link button; the card falls back to "Live demo". */
+  liveLabel?: string;
   status: ProjectStatus;
 };
 

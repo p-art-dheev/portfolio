@@ -98,6 +98,32 @@ export async function uploadMediaFile(formData: FormData) {
   return { url: data.publicUrl };
 }
 
+/**
+ * Normalises an admin-entered link. Accepts absolute http(s) URLs, bare
+ * domains (https:// is added) and site-relative paths. Anything else, such as
+ * `javascript:` URLs, is rejected so it can never be rendered as a link.
+ */
+function linkUrl(raw: string): { value: string | null } | { error: string } {
+  const value = raw.trim();
+  if (!value) return { value: null };
+  if (value.startsWith("/") && !value.startsWith("//")) return { value };
+  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(value)
+    ? value
+    : `https://${value}`;
+  try {
+    const url = new URL(candidate);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return { error: `"${value}" must be an http(s) link.` };
+    }
+    if (!url.hostname.includes(".")) {
+      return { error: `"${value}" is not a valid URL.` };
+    }
+    return { value: url.toString() };
+  } catch {
+    return { error: `"${value}" is not a valid URL.` };
+  }
+}
+
 export async function saveProject(formData: FormData) {
   const supabase = await requireAdmin();
   const id = str(formData, "id");
@@ -106,6 +132,15 @@ export async function saveProject(formData: FormData) {
   const statusValue = str(formData, "status") as ProjectStatus;
   const status: ProjectStatus =
     statusValue === "live" || statusValue === "Building" ? statusValue : "off";
+
+  if (!title || !slug) {
+    return { error: "Title is required." };
+  }
+
+  const github = linkUrl(str(formData, "github_url"));
+  if ("error" in github) return { error: `GitHub URL: ${github.error}` };
+  const live = linkUrl(str(formData, "live_url"));
+  if ("error" in live) return { error: `Live URL: ${live.error}` };
 
   const payload = {
     title,
@@ -116,26 +151,65 @@ export async function saveProject(formData: FormData) {
       .split(",")
       .map((tag) => tag.trim())
       .filter(Boolean),
-    href: optionalUrl(str(formData, "href")),
+    github_url: github.value,
+    live_url: live.value,
+    live_label: live.value ? str(formData, "live_label").slice(0, 40) : "",
     status,
     featured: bool(formData, "featured"),
     published: bool(formData, "published"),
-    sort_order: num(formData, "sort_order", 0),
   };
 
-  if (!title || !slug) {
-    return { error: "Title is required." };
+  let error: { message: string } | null;
+  if (id) {
+    ({ error } = await supabase.from("projects").update(payload).eq("id", id));
+  } else {
+    // New projects go to the end of the list; reorder by dragging afterwards.
+    const { data: last } = await supabase
+      .from("projects")
+      .select("sort_order")
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const sort_order = (last?.sort_order ?? 0) + 10;
+    ({ error } = await supabase
+      .from("projects")
+      .insert({ ...payload, sort_order }));
   }
-
-  const query = id
-    ? supabase.from("projects").update(payload).eq("id", id)
-    : supabase.from("projects").insert(payload);
-
-  const { error } = await query;
   if (error) return { error: error.message };
 
   revalidatePublic();
   redirect("/admin/projects");
+}
+
+/** Persists a drag-and-drop order: `ids` is the full list, top to bottom. */
+export async function reorderProjects(
+  ids: string[],
+): Promise<{ error?: string }> {
+  const supabase = await requireAdmin();
+  if (
+    !Array.isArray(ids) ||
+    ids.length === 0 ||
+    ids.some((id) => typeof id !== "string" || id.length === 0) ||
+    new Set(ids).size !== ids.length
+  ) {
+    return { error: "Invalid order." };
+  }
+
+  // A portfolio has a handful of projects, so one small update per row is fine.
+  const results = await Promise.all(
+    ids.map((id, index) =>
+      supabase
+        .from("projects")
+        .update({ sort_order: (index + 1) * 10 })
+        .eq("id", id),
+    ),
+  );
+  const failed = results.find((result) => result.error);
+  if (failed?.error) return { error: failed.error.message };
+
+  revalidatePublic();
+  revalidatePath("/admin/projects");
+  return {};
 }
 
 export async function deleteProject(formData: FormData) {

@@ -48,7 +48,7 @@ on conflict (id) do update set
   socials = excluded.socials,
   tech_stack = excluded.tech_stack;
 
-insert into public.projects (slug, title, description, banner, tags, href, status, featured, published, sort_order)
+insert into public.projects (slug, title, description, banner, tags, github_url, live_url, live_label, status, featured, published, sort_order)
 values
   (
     'project-one',
@@ -57,6 +57,8 @@ values
     '/projects/project-one/banner.png',
     array['Python', 'LSTM', 'Time Series Analysis'],
     null,
+    null,
+    '',
     'off',
     true,
     true,
@@ -69,6 +71,8 @@ values
     '/projects/project-two/banner.png',
     array['BERT', 'Transformers', 'NLP'],
     null,
+    null,
+    '',
     'off',
     true,
     true,
@@ -81,6 +85,8 @@ values
     '/projects/project-three/1.png',
     array['Next.js', 'TypeScript', 'PostgreSQL'],
     null,
+    null,
+    '',
     'off',
     true,
     true,
@@ -93,6 +99,8 @@ values
     '/projects/project-four/banner.png',
     array['Python', 'FastAPI', 'React', 'PuLP'],
     'https://github.com/p-art-dheev/nutrition-based-meal-optimization',
+    null,
+    '',
     'Building',
     true,
     true,
@@ -103,7 +111,9 @@ on conflict (slug) do update set
   description = excluded.description,
   banner = excluded.banner,
   tags = excluded.tags,
-  href = excluded.href,
+  github_url = excluded.github_url,
+  live_url = excluded.live_url,
+  live_label = excluded.live_label,
   status = excluded.status,
   featured = excluded.featured,
   published = excluded.published,

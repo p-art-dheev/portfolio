@@ -93,7 +93,11 @@ type ProjectRow = {
   description: string;
   banner: string | null;
   tags: string[] | null;
-  href: string | null;
+  github_url?: string | null;
+  live_url?: string | null;
+  live_label?: string | null;
+  /** Pre-migration column; read only as a fallback until migrate-project-links.sql runs. */
+  href?: string | null;
   status: string;
   featured: boolean;
   published: boolean;
@@ -107,9 +111,24 @@ function toProject(row: ProjectRow): Project {
     description: row.description,
     banner: row.banner ?? undefined,
     tags: row.tags ?? [],
-    href: row.href ?? undefined,
+    ...projectLinks(row),
     status: asProjectStatus(row.status),
   };
+}
+
+const GITHUB_URL = /^https?:\/\/(www\.)?github\.com\//i;
+
+function projectLinks(
+  row: ProjectRow,
+): Pick<Project, "githubUrl" | "liveUrl" | "liveLabel"> {
+  let githubUrl = row.github_url || undefined;
+  let liveUrl = row.live_url || undefined;
+  // Until the migration runs, split the old single href the same way it will.
+  if (!githubUrl && !liveUrl && row.href) {
+    if (GITHUB_URL.test(row.href)) githubUrl = row.href;
+    else liveUrl = row.href;
+  }
+  return { githubUrl, liveUrl, liveLabel: row.live_label || undefined };
 }
 
 function toAdminProject(row: ProjectRow): AdminProject {

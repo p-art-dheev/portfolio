@@ -10,6 +10,7 @@ The public site stays on Vercel. Content (projects, blogs, artworks, books, home
    For unique homepage visitors and unique blog reads, run [`supabase/migrate-analytics.sql`](../supabase/migrate-analytics.sql).
    Then run [`supabase/migrate-blog-v2.sql`](../supabase/migrate-blog-v2.sql): it fixes unique-read recording, adds one-like-per-visitor, stored reading time and cover alt text.
    Then run [`supabase/migrate-blog-categories.sql`](../supabase/migrate-blog-categories.sql): it adds a manageable list of blog categories (create/rename/delete from `/admin/blogs/categories`) in place of the old hardcoded five.
+   Then run [`supabase/migrate-project-links.sql`](../supabase/migrate-project-links.sql): it replaces the single project `href` with separate GitHub / live URLs (plus a custom live-button label) and normalises sort order for drag-and-drop reordering.
 3. **Authentication → Providers → Email**: keep email enabled.
 4. **Authentication → Providers**: turn **off** “Allow new users to sign up” (or disable public sign-ups under Auth settings).
 5. **Authentication → Users → Add user**: create **one** admin account (your email + password). Confirm the email if the dashboard asks you to.

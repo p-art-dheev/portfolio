@@ -83,7 +83,8 @@ export const featuredProjects: Project[] = [
       "Developed a nutrition-focused application that recommends meals based on individual calorie and nutritional requirements.",
     banner: "/projects/project-four/banner.png",
     tags: ["Python", "FastAPI", "React", "PuLP"],
-    href: "https://github.com/p-art-dheev/nutrition-based-meal-optimization",
+    githubUrl:
+      "https://github.com/p-art-dheev/nutrition-based-meal-optimization",
     status: "Building",
   },
 ];

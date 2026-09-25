@@ -1,17 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 import type { Project, ProjectStatus } from "@/lib/data";
+import { cn } from "@/lib/utils";
+import { Github } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -86,40 +89,94 @@ function ProjectBanner({ project }: { project: Project }) {
   );
 }
 
+/** Only http(s) and site-relative links are ever rendered. */
+function safeHref(url?: string) {
+  if (!url) return undefined;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/") && !url.startsWith("//")) return url;
+  return undefined;
+}
+
+function linkProps(href: string) {
+  return href.startsWith("/")
+    ? { href }
+    : { href, target: "_blank", rel: "noopener noreferrer" };
+}
+
+function ProjectLinks({
+  project,
+  className,
+}: {
+  project: Project;
+  className?: string;
+}) {
+  const githubUrl = safeHref(project.githubUrl);
+  const liveUrl = safeHref(project.liveUrl);
+  if (!githubUrl && !liveUrl) return null;
+
+  const liveLabel = project.liveLabel?.trim() || "Live demo";
+
+  return (
+    <CardFooter className={cn("gap-2 bg-transparent", className)}>
+      {githubUrl ? (
+        <Button
+          asChild
+          variant="outline"
+          size="icon-lg"
+          className="rounded-full"
+        >
+          <a
+            {...linkProps(githubUrl)}
+            aria-label={`${project.title} source code on GitHub`}
+            title="View source on GitHub"
+          >
+            <Github className="size-4.5" />
+          </a>
+        </Button>
+      ) : null}
+      {liveUrl ? (
+        <Button asChild size="sm" className="group/live ml-auto h-9 px-3.5">
+          <a
+            {...linkProps(liveUrl)}
+            aria-label={`${liveLabel}: ${project.title}`}
+          >
+            {liveLabel}
+            <ArrowUpRight className="size-3.5 transition-transform group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5" />
+          </a>
+        </Button>
+      ) : null}
+    </CardFooter>
+  );
+}
+
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div className="h-full transition-transform hover:-translate-y-1">
       <Card className="h-full transition-shadow hover:shadow-md">
-      <div className="px-(--card-spacing)">
-        <ProjectBanner project={project} />
-      </div>
-      <CardHeader>
-        <CardTitle>{project.title}</CardTitle>
-        <CardAction>
-          <ProjectStatus status={project.status} />
-        </CardAction>
-        <CardDescription>{project.description}</CardDescription>
-      </CardHeader>
-      <CardContent className="mt-auto flex items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5">
-          {project.tags.map((tag) => (
-            <Badge key={tag} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
+        <div className="px-(--card-spacing)">
+          <ProjectBanner project={project} />
         </div>
-        {project.href && (
-          <Link
-            href={project.href}
-            target={project.href.startsWith("http") ? "_blank" : undefined}
-            rel={project.href.startsWith("http") ? "noreferrer" : undefined}
-            className="group/link inline-flex shrink-0 items-center gap-1 text-sm font-medium hover:underline"
-          >
-            View project
-            <ArrowUpRight className="size-3.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
-          </Link>
-        )}
-      </CardContent>
+        <CardHeader>
+          <CardTitle>{project.title}</CardTitle>
+          <CardAction>
+            <ProjectStatus status={project.status} />
+          </CardAction>
+          <CardDescription>{project.description}</CardDescription>
+        </CardHeader>
+        {project.tags.length > 0 ? (
+          <CardContent className="mt-auto flex flex-wrap gap-1.5">
+            {project.tags.map((tag) => (
+              <Badge key={tag} variant="secondary">
+                {tag}
+              </Badge>
+            ))}
+          </CardContent>
+        ) : null}
+        {/* Pin the footer to the bottom so buttons line up across a grid row. */}
+        <ProjectLinks
+          project={project}
+          className={project.tags.length > 0 ? undefined : "mt-auto"}
+        />
       </Card>
     </div>
   );
