@@ -27,7 +27,7 @@ export function VisitorCount({ initialCount }: { initialCount: number }) {
   return (
     <p className="text-muted-foreground inline-flex items-center gap-1.5 text-sm">
       <Users className="size-3.5" aria-hidden />
-      {count.toLocaleString()} unique {count === 1 ? "visitor" : "visitors"}
+      {count.toLocaleString()} {count === 1 ? "visitor" : "visitors"}
     </p>
   );
 }
