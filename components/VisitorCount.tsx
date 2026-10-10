@@ -3,22 +3,17 @@
 import { useEffect, useState } from "react";
 import { Users } from "lucide-react";
 
+import { callRpc } from "@/lib/supabase/rpc";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { getVisitorId } from "@/lib/visitor";
 
 export function VisitorCount() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const visitorId = getVisitorId();
-    fetch("/api/analytics/visit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ visitorId }),
-    })
-      .then((response) => response.json())
-      .then((data: { visitors?: number }) => {
-        if (typeof data.visitors === "number") setCount(data.visitors);
-      })
+    if (!isSupabaseConfigured()) return;
+    callRpc<number>("record_site_visitor", { vid: getVisitorId() })
+      .then((visitors) => setCount(Number(visitors) || 0))
       .catch(() => {});
   }, []);
 

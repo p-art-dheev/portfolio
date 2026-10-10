@@ -19,7 +19,47 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { RpcError, callRpc } from "@/lib/supabase/rpc";
 import { getVisitorId } from "@/lib/visitor";
+
+type Engagement = { reads?: number; likes?: number; liked?: boolean };
+
+/** Records a unique read, then returns reads, likes and this visitor's like. */
+async function recordRead(slug: string): Promise<Engagement> {
+  const vid = getVisitorId();
+  const reads = await callRpc<number>("record_post_read", {
+    post_slug: slug,
+    vid,
+  }).catch(() => null);
+  try {
+    return await callRpc<Engagement>("get_post_engagement", {
+      post_slug: slug,
+      vid,
+    });
+  } catch {
+    // Before migrate-blog-v2.sql only the read count is available.
+    if (reads === null) throw new Error("Could not record read");
+    return { reads: Number(reads) || 0 };
+  }
+}
+
+/** One like per visitor id; want=false removes it. Returns the new total. */
+async function saveLike(slug: string, want: boolean): Promise<number> {
+  try {
+    return await callRpc<number>("set_post_like", {
+      post_slug: slug,
+      vid: getVisitorId(),
+      want,
+    });
+  } catch (error) {
+    // Migration not applied yet: legacy counter (still un-deduplicated).
+    if (error instanceof RpcError && error.code === "PGRST202" && want) {
+      return callRpc<number>("increment_post_likes", { post_slug: slug });
+    }
+    throw error;
+  }
+}
 
 type Props = {
   slug: string;
@@ -54,25 +94,19 @@ export function BlogEngagement({
       setLiked(window.localStorage.getItem(likedKey) === "1");
     } catch {}
 
-    const controller = new AbortController();
-    fetch(`/api/posts/${slug}/view`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ visitorId: getVisitorId() }),
-      signal: controller.signal,
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .then(
-        (data: { reads?: number; likes?: number; liked?: boolean } | null) => {
-          if (!data) return;
-          if (data.reads) setReads(data.reads);
-          if (typeof data.likes === "number" && data.likes > 0)
-            setLikes(data.likes);
-          if (typeof data.liked === "boolean") setLiked(data.liked);
-        },
-      )
+    if (!isSupabaseConfigured()) return;
+    let cancelled = false;
+    recordRead(slug)
+      .then((data) => {
+        if (cancelled) return;
+        if (data.reads) setReads(Number(data.reads));
+        if (Number(data.likes) > 0) setLikes(Number(data.likes));
+        if (typeof data.liked === "boolean") setLiked(data.liked);
+      })
       .catch(() => {});
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+    };
   }, [slug, likedKey]);
 
   async function onLike() {
@@ -82,14 +116,8 @@ export function BlogEngagement({
     setLiked(next);
     setLikes((count) => Math.max(0, count + (next ? 1 : -1)));
     try {
-      const response = await fetch(`/api/posts/${slug}/like`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ visitorId: getVisitorId(), liked: next }),
-      });
-      if (!response.ok) throw new Error("failed");
-      const data = (await response.json()) as { likes?: number };
-      if (typeof data.likes === "number") setLikes(data.likes);
+      if (!isSupabaseConfigured()) throw new Error("Unavailable");
+      setLikes(Number(await saveLike(slug, next)) || 0);
       try {
         window.localStorage.setItem(likedKey, next ? "1" : "0");
       } catch {}
