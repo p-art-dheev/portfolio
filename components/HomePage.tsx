@@ -5,22 +5,19 @@ import { Hero } from "@/components/Hero";
 import { AboutSection, EducationSection, ExploreSection } from "@/components/HomeSections";
 import { TechStackGrid } from "@/components/TechStackGrid";
 import { GithubHeatmapLazy } from "@/components/GithubHeatmapLazy";
-import {
-  getFeaturedProjects,
-  getSiteSettings,
-  getSiteVisitorCount,
-} from "@/lib/queries";
+import { getFeaturedProjects, getSiteSettings } from "@/lib/queries";
 
 export async function HomePage() {
-  const [site, projects, visitorCount] = await Promise.all([
+  // Only cookie-free reads here so the page is prerendered and served from
+  // the CDN. The visitor count is loaded in the browser (see VisitorCount).
+  const [site, projects] = await Promise.all([
     getSiteSettings(),
     getFeaturedProjects(),
-    getSiteVisitorCount(),
   ]);
 
   return (
     <Container as="div" className="flex flex-col gap-10 py-8 sm:gap-12 sm:py-12">
-      <Hero site={site} visitorCount={visitorCount} />
+      <Hero site={site} />
       <EducationSection site={site} />
       <AboutSection site={site} />
       <ConnectSection site={site} />

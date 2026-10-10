@@ -4,13 +4,7 @@ import { Reveal } from "@/components/Reveal";
 import { TimeStatus } from "@/components/TimeStatus";
 import { VisitorCount } from "@/components/VisitorCount";
 
-export function Hero({
-  site,
-  visitorCount,
-}: {
-  site: SiteContent;
-  visitorCount: number;
-}) {
+export function Hero({ site }: { site: SiteContent }) {
   return (
     <Reveal>
     <section className="flex flex-col gap-6">
@@ -25,7 +19,7 @@ export function Hero({
               Hi, I&apos;m {site.name}
             </h1>
             <p className="text-lg text-muted-foreground">{site.role}</p>
-            <VisitorCount initialCount={visitorCount} />
+            <VisitorCount />
           </div>
         </div>
         <TimeStatus className="hidden sm:flex" />
