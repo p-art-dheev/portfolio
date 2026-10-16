@@ -20,6 +20,9 @@ const geistSans = Geist({
   preload: true,
 });
 
+// Fonts are self-hosted by next/font (no request to Google at runtime).
+// Geist Mono is declared site-wide but never preloaded; browsers only fetch
+// it on pages that render monospace text (blog code blocks, admin).
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
