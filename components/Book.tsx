@@ -58,6 +58,10 @@ export function Book({ image, title, author, alt }: BookProps) {
           <img
             src={image}
             alt={alt || title}
+            width={200}
+            height={305}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
             draggable={false}
           />
