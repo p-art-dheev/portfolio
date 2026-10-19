@@ -1,13 +1,13 @@
 # pardheev.dev
 
-Personal portfolio site for **Pardheev** — Next.js 15 App Router, TypeScript, Tailwind CSS, and shadcn/ui.
+Personal portfolio site for **Pardheev** — Next.js 15 App Router, TypeScript, Tailwind CSS v4, and shadcn/ui.
 
 Public pages read published content from **Supabase** (Postgres + Auth + Storage). Until env vars are set, they fall back to the static copy in `lib/data.ts`, `lib/artworks.ts`, and `lib/books.ts`.
 
 ## Stack
 
 - Next.js 15 (App Router) + TypeScript
-- Tailwind CSS
+- Tailwind CSS v4
 - shadcn/ui (Radix)
 - Geist Sans / Geist Mono via `next/font`
 - Motion for animation
