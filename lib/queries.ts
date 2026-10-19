@@ -646,18 +646,6 @@ export async function getAdminCounts() {
   };
 }
 
-export async function getSiteVisitorCount() {
-  if (!isSupabaseConfigured()) return 0;
-  try {
-    const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase.rpc("get_site_visitor_count");
-    if (error) return 0;
-    return Number(data) || 0;
-  } catch {
-    return 0;
-  }
-}
-
 export type PostFeedItem = {
   slug: string;
   title: string;

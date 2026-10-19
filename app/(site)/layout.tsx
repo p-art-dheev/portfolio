@@ -2,6 +2,10 @@ import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { getSiteSettings } from "@/lib/queries";
 
+// Public pages are static. Admin saves revalidate them on demand; this is a
+// backstop for edits made straight in Supabase and for read counts.
+export const revalidate = 3600;
+
 export default async function SiteLayout({
   children,
 }: Readonly<{

@@ -41,7 +41,7 @@ export function TimeStatus({ className }: TimeStatusProps) {
       <div className="text-muted-foreground flex items-center gap-2">
         <time
           dateTime={now?.toISOString()}
-          className="font-mono min-w-[9ch] tabular-nums"
+          className="min-w-[9ch] tabular-nums"
           suppressHydrationWarning
         >
           {now ? clockFormatter.format(now) : "—"}

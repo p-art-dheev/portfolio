@@ -6,8 +6,8 @@ export async function middleware(request: NextRequest) {
   return updateSession(request);
 }
 
+// Only the admin studio needs the Supabase session. Running this on public
+// pages added an auth round trip to every request and kept them off the CDN.
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|pdf)$).*)",
-  ],
+  matcher: ["/admin/:path*"],
 };
