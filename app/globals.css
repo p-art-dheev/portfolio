@@ -129,23 +129,43 @@
   }
 }
 
-/* GitHub calendar: scale the SVG to fit its container instead of scrolling.
-   The library renders an inner scroll-container plus a fixed-width SVG; we
-   disable that scroll and let the SVG's viewBox scale it responsively. */
-.heatmap-scroll .react-activity-calendar__scroll-container {
-  overflow: visible !important;
-  padding-left: 34px;
+/* GitHub calendar: tiles keep a fixed size at every viewport width. When a
+   year of weeks is wider than the column, the grid scrolls sideways (anchored
+   to the latest week in GitHubActivitySection) and fades at the clipped edge. */
+.heatmap .react-activity-calendar__scroll-container {
+  /* Room for the hover pop so edge tiles aren't clipped by the scroller. */
+  max-width: none !important;
+  padding: 2px 4px 4px 2px;
+  margin: -2px -4px -4px -2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  overscroll-behavior-x: contain;
+  --fade-start: 0px;
+  --fade-end: 0px;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-start),
+    #000 calc(100% - var(--fade-end)),
+    transparent
+  );
 }
 
-.heatmap-scroll svg.react-activity-calendar__calendar {
-  width: 100% !important;
-  height: auto !important;
-  margin-left: 0 !important;
-  overflow: visible;
+.heatmap:not([data-at-start]) .react-activity-calendar__scroll-container {
+  --fade-start: 28px;
+}
+
+.heatmap:not([data-at-end]) .react-activity-calendar__scroll-container {
+  --fade-end: 28px;
+}
+
+.heatmap .react-activity-calendar__footer {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
 }
 
 /* Interactive pop on each day tile when hovered. */
-.heatmap-scroll svg.react-activity-calendar__calendar rect {
+.heatmap svg.react-activity-calendar__calendar rect {
   transform-box: fill-box;
   transform-origin: center;
   transition:
@@ -153,10 +173,16 @@
     stroke 0.13s ease;
 }
 
-.heatmap-scroll svg.react-activity-calendar__calendar rect:hover {
-  transform: scale(1.45);
-  stroke: var(--foreground);
-  stroke-width: 0.5px;
+@media (hover: hover) {
+  .heatmap svg.react-activity-calendar__calendar rect:hover {
+    transform: scale(1.35);
+    stroke: var(--foreground);
+    stroke-width: 0.5px;
+  }
+}
+
+.heatmap svg.react-activity-calendar__calendar text {
+  fill: var(--muted-foreground);
 }
 
 /* Contribution tooltip, themed to match the site's popover surface. */
