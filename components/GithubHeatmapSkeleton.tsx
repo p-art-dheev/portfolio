@@ -12,7 +12,7 @@ export function GithubHeatmapSkeleton({ githubUrl }: { githubUrl: string }) {
         </span>
       </div>
       <div
-        className="bg-muted/40 h-[118px] w-full max-w-3xl rounded-lg"
+        className="bg-muted/40 h-[156px] w-full max-w-[718px] rounded-lg sm:h-[134px]"
         aria-hidden
       />
     </section>
