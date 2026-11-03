@@ -13,7 +13,7 @@ export function BlogsPage({
   return (
     <Container className="py-12 sm:py-16">
       <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Blogs</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Blog</h1>
         <p className="text-muted-foreground mt-3 max-w-xl">
           Writing on development, AI, art, and ideas.
           {posts.length > 0 ? (
