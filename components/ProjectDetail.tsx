@@ -4,22 +4,9 @@ import { ArrowLeft, ArrowUpRight, PlayCircle } from "lucide-react";
 
 import type { Project } from "@/lib/content-types";
 import { Github } from "@/components/icons";
+import { canOptimize } from "@/lib/images";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
-  : null;
-
-/** next/image only optimizes local files and Supabase Storage (next.config). */
-function canOptimize(src: string) {
-  if (src.startsWith("/") && !src.startsWith("//")) return true;
-  try {
-    return supabaseHost !== null && new URL(src).hostname === supabaseHost;
-  } catch {
-    return false;
-  }
-}
 
 function safeHref(url?: string) {
   if (!url) return undefined;

@@ -1,7 +1,9 @@
 import { Mail } from "lucide-react";
 
 import type { SiteContent } from "@/lib/content-types";
+import { EmailLink } from "@/components/EmailLink";
 import { Github, Linkedin } from "@/components/icons";
+import { encodeEmail } from "@/lib/email";
 import { Container } from "@/components/Container";
 
 export function Footer({ site }: { site: SiteContent }) {
@@ -39,13 +41,13 @@ export function Footer({ site }: { site: SiteContent }) {
           >
             <Github className="size-4" />
           </a>
-          <a
-            href={`mailto:${site.socials.email}`}
+          <EmailLink
+            encoded={encodeEmail(site.socials.email)}
             aria-label="Email"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <Mail className="size-4" />
-          </a>
+          </EmailLink>
         </div>
       </Container>
     </footer>

@@ -5,6 +5,7 @@ import type { SiteContent } from "@/lib/content-types";
 import { AvatarSwitcher } from "@/components/AvatarSwitcher";
 import { Reveal } from "@/components/Reveal";
 import { TimeStatus } from "@/components/TimeStatus";
+import { SITE_NAME } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 
 export function Hero({ site }: { site: SiteContent }) {
@@ -19,7 +20,7 @@ export function Hero({ site }: { site: SiteContent }) {
             </div>
             <div className="space-y-2">
               <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-                Hi, I&apos;m {site.name}
+                Hi, I&apos;m {SITE_NAME}
               </h1>
               <p className="text-muted-foreground text-lg">{site.role}</p>
             </div>

@@ -16,12 +16,43 @@ export function EducationSection({ site }: { site: SiteContent }) {
   );
 }
 
+/**
+ * Uses the bio's own blank-line breaks when it has them; otherwise splits a
+ * long single block at the sentence closest to the middle.
+ */
+function bioParagraphs(bio: string) {
+  const explicit = bio
+    .split(/\n\s*\n/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (explicit.length > 1 || bio.length < 320) return explicit;
+
+  const sentences = bio.match(/[^.!?]+[.!?]+(\s+|$)/g);
+  if (!sentences || sentences.length < 4) return explicit;
+
+  let split = 1;
+  let length = 0;
+  for (let i = 0; i < sentences.length - 1; i++) {
+    length += sentences[i].length;
+    split = i + 1;
+    if (length >= bio.length / 2) break;
+  }
+  return [
+    sentences.slice(0, split).join("").trim(),
+    sentences.slice(split).join("").trim(),
+  ];
+}
+
 export function AboutSection({ site }: { site: SiteContent }) {
   return (
     <Reveal delay={0.05}>
       <section className="space-y-3">
         <h2 className="text-lg font-medium tracking-tight">About</h2>
-        <p className="text-muted-foreground w-full leading-7">{site.bio}</p>
+        {bioParagraphs(site.bio).map((paragraph, index) => (
+          <p key={index} className="text-muted-foreground w-full leading-7">
+            {paragraph}
+          </p>
+        ))}
       </section>
     </Reveal>
   );
