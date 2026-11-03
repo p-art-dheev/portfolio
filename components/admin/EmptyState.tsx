@@ -22,7 +22,9 @@ export function EmptyState({
         <Icon className="text-muted-foreground size-5" />
       </div>
       <p className="font-medium">{title}</p>
-      <p className="text-muted-foreground mt-1 max-w-sm text-sm">{description}</p>
+      <p className="text-muted-foreground mt-1 max-w-sm text-sm">
+        {description}
+      </p>
       {href && action ? (
         <Button asChild className="mt-5">
           <Link href={href}>{action}</Link>

@@ -13,6 +13,16 @@ export type Project = {
   /** Text on the live-link button; the card falls back to "Live demo". */
   liveLabel?: string;
   status: ProjectStatus;
+  /** Case-study fields for /projects/[slug]. All optional; empty ones are hidden. */
+  problem?: string;
+  role?: string;
+  approach?: string;
+  outcome?: string;
+  /** Short result lines, ideally with a number ("81% accuracy on ..."). */
+  highlights?: string[];
+  /** Screenshot URLs (site-relative or Supabase Storage). */
+  gallery?: string[];
+  videoUrl?: string;
 };
 
 export type TechItem = {

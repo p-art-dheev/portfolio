@@ -36,7 +36,7 @@ export function Book({ image, title, author, alt }: BookProps) {
       role="img"
     >
       <div
-        className={`relative flex h-full w-full flex-col items-center justify-center transition-transform [transform-style:preserve-3d] [transform:perspective(1200px)_translateZ(0)] motion-safe:group-hover:origin-right motion-safe:group-hover:[transform:perspective(1200px)_translateZ(50px)] ${ease}`}
+        className={`relative flex h-full w-full [transform:perspective(1200px)_translateZ(0)] flex-col items-center justify-center transition-transform [transform-style:preserve-3d] motion-safe:group-hover:origin-right motion-safe:group-hover:[transform:perspective(1200px)_translateZ(50px)] ${ease}`}
       >
         <div
           className="relative z-0 flex h-full w-full flex-col items-center justify-center gap-2.5 overflow-hidden px-[30px]"
@@ -45,14 +45,14 @@ export function Book({ image, title, author, alt }: BookProps) {
               "linear-gradient(239deg, rgb(255, 255, 255) 0%, rgb(224, 224, 224) 100%)",
           }}
         >
-          <p className="w-full text-center text-[20px] font-bold leading-tight text-black">
+          <p className="w-full text-center text-[20px] leading-tight font-bold text-black">
             {title}
           </p>
           <p className="w-full text-center text-xs text-black/30">{author}</p>
         </div>
 
         <div
-          className={`absolute inset-0 z-[1] origin-left overflow-hidden transition-transform [transform-style:preserve-3d] [transform:rotateY(0deg)_translateZ(0)] motion-safe:group-hover:[transform:rotateY(-70deg)_translateZ(10px)] ${ease}`}
+          className={`absolute inset-0 z-[1] origin-left [transform:rotateY(0deg)_translateZ(0)] overflow-hidden transition-transform [transform-style:preserve-3d] motion-safe:group-hover:[transform:rotateY(-70deg)_translateZ(10px)] ${ease}`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

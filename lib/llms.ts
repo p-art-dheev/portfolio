@@ -57,6 +57,7 @@ export async function buildLlmsTxt() {
 
   for (const project of projects) {
     const links = [
+      `[case study](${absoluteUrl(`/projects/${project.slug}`)})`,
       project.githubUrl ? `[source](${project.githubUrl})` : "",
       project.liveUrl ? `[live](${project.liveUrl})` : "",
     ]

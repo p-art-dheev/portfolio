@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
 
-import { getPostFeed } from "@/lib/queries";
+import { getPostFeed, getPublishedProjects } from "@/lib/queries";
 import { absoluteUrl } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getPostFeed();
+  const [posts, projects] = await Promise.all([
+    getPostFeed(),
+    getPublishedProjects(),
+  ]);
   const latestPost = posts
     .map((post) => post.updatedAt ?? post.publishedAt)
     .filter((value): value is string => Boolean(value))
@@ -32,6 +35,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     { url: absoluteUrl("/books"), changeFrequency: "monthly", priority: 0.5 },
+    ...projects.map((project) => ({
+      url: absoluteUrl(`/projects/${project.slug}`),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     ...posts.map((post) => ({
       url: absoluteUrl(`/blogs/${post.slug}`),
       lastModified: post.updatedAt ?? post.publishedAt ?? undefined,

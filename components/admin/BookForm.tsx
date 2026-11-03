@@ -40,11 +40,7 @@ export function BookForm({ book }: { book?: AdminBook }) {
       />
       <div className="space-y-2">
         <Label htmlFor="cover_alt">Cover alt text</Label>
-        <Input
-          id="cover_alt"
-          name="cover_alt"
-          defaultValue={book?.coverAlt}
-        />
+        <Input id="cover_alt" name="cover_alt" defaultValue={book?.coverAlt} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="sort_order">Sort order</Label>

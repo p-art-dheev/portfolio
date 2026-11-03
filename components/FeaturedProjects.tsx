@@ -8,7 +8,9 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
   return (
     <Reveal>
       <section className="space-y-4">
-        <h2 className="text-lg font-medium tracking-tight">Featured projects</h2>
+        <h2 className="text-lg font-medium tracking-tight">
+          Featured projects
+        </h2>
         <div className="grid gap-8 sm:grid-cols-2">
           {projects.map((project) => (
             <ProjectCard key={project.slug} project={project} />

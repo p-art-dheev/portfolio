@@ -121,6 +121,78 @@ export function ProjectForm({ project }: { project?: AdminProject }) {
           </p>
         ) : null}
       </fieldset>
+      <fieldset className="border-border space-y-4 rounded-2xl border p-4">
+        <legend className="px-1 text-sm font-medium">Case study</legend>
+        <p className="text-muted-foreground -mt-1 text-xs">
+          Shown on the project&apos;s own page. Empty fields are hidden. Use a
+          blank line to start a new paragraph.
+        </p>
+        <Field
+          label="Problem: what needed solving, and for whom"
+          htmlFor="problem"
+        >
+          <Textarea
+            id="problem"
+            name="problem"
+            rows={3}
+            defaultValue={project?.problem}
+          />
+        </Field>
+        <Field label="Your role" htmlFor="role">
+          <Input id="role" name="role" defaultValue={project?.role} />
+        </Field>
+        <Field label="Approach: how you built it" htmlFor="approach">
+          <Textarea
+            id="approach"
+            name="approach"
+            rows={5}
+            defaultValue={project?.approach}
+          />
+        </Field>
+        <Field label="Outcome: what it achieved" htmlFor="outcome">
+          <Textarea
+            id="outcome"
+            name="outcome"
+            rows={3}
+            defaultValue={project?.outcome}
+          />
+        </Field>
+        <Field
+          label="Key results (one per line, include numbers)"
+          htmlFor="highlights"
+        >
+          <Textarea
+            id="highlights"
+            name="highlights"
+            rows={3}
+            placeholder={
+              "81% accuracy on the SemEval laptop test set\n4 models compared"
+            }
+            defaultValue={project?.highlights?.join("\n")}
+          />
+        </Field>
+        <Field label="Screenshot URLs (one per line)" htmlFor="gallery">
+          <Textarea
+            id="gallery"
+            name="gallery"
+            rows={3}
+            placeholder={
+              "/projects/my-project/screen-1.png\nhttps://…/storage/v1/object/public/…"
+            }
+            defaultValue={project?.gallery?.join("\n")}
+          />
+        </Field>
+        <Field label="Demo video URL" htmlFor="video_url">
+          <Input
+            id="video_url"
+            name="video_url"
+            type="text"
+            inputMode="url"
+            placeholder="https://youtu.be/…"
+            defaultValue={project?.videoUrl}
+          />
+        </Field>
+      </fieldset>
       <Field label="Status" htmlFor="status">
         <select
           id="status"

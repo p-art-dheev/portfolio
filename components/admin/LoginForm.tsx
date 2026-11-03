@@ -73,7 +73,11 @@ export function LoginForm({ configured }: { configured: boolean }) {
         />
       </div>
       {error ? <p className="text-destructive text-sm">{error}</p> : null}
-      <Button type="submit" className="h-11 w-full" disabled={pending || !configured}>
+      <Button
+        type="submit"
+        className="h-11 w-full"
+        disabled={pending || !configured}
+      >
         {pending ? "Signing in…" : "Sign in"}
       </Button>
     </form>

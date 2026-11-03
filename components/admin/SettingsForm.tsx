@@ -29,7 +29,12 @@ export function SettingsForm({ site }: { site: SiteContent }) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="domain">Domain</Label>
-          <Input id="domain" name="domain" required defaultValue={site.domain} />
+          <Input
+            id="domain"
+            name="domain"
+            required
+            defaultValue={site.domain}
+          />
         </div>
       </div>
       <div className="space-y-2">
@@ -42,7 +47,12 @@ export function SettingsForm({ site }: { site: SiteContent }) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="bio">Bio</Label>
-        <Textarea id="bio" name="bio" className="min-h-40" defaultValue={site.bio} />
+        <Textarea
+          id="bio"
+          name="bio"
+          className="min-h-40"
+          defaultValue={site.bio}
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="college">College</Label>
@@ -74,7 +84,11 @@ export function SettingsForm({ site }: { site: SiteContent }) {
       />
       <div className="space-y-2">
         <Label htmlFor="linkedin">LinkedIn</Label>
-        <Input id="linkedin" name="linkedin" defaultValue={site.socials.linkedin} />
+        <Input
+          id="linkedin"
+          name="linkedin"
+          defaultValue={site.socials.linkedin}
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="github">GitHub</Label>
@@ -82,7 +96,12 @@ export function SettingsForm({ site }: { site: SiteContent }) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" defaultValue={site.socials.email} />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          defaultValue={site.socials.email}
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="avatars">Avatar URLs (one per line)</Label>

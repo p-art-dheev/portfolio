@@ -54,7 +54,7 @@ export function GalleryPhotogrid({ photos }: GalleryPhotogridProps) {
         )}
         style={{ transitionDelay: sectionShown ? "0.35s" : "0s" }}
       >
-        <div className="[column-count:1] [column-gap:16px] sm:[column-count:2]">
+        <div className="[column-gap:16px] [column-count:1] sm:[column-count:2]">
           {photos.map((photo, i) => (
             <GridItem
               key={photo.src}
@@ -108,7 +108,7 @@ function GridItem({
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       className={cn(
-        "relative mb-4 block w-full cursor-pointer overflow-hidden break-inside-avoid rounded-[2px] border-0 bg-transparent p-0 text-left",
+        "relative mb-4 block w-full cursor-pointer break-inside-avoid overflow-hidden rounded-[2px] border-0 bg-transparent p-0 text-left",
         "transition-[opacity,transform] duration-[0.6s] ease-[cubic-bezier(0.22,1,0.36,1)]",
         shown ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0",
       )}
@@ -205,7 +205,7 @@ function Lightbox({
   return (
     <div
       onClick={handleClose}
-      className="fixed inset-0 z-[99999] flex items-center justify-center isolate"
+      className="fixed inset-0 isolate z-[99999] flex items-center justify-center"
       style={{
         background: "rgba(0,0,0,0.94)",
         opacity: visible ? 1 : 0,
@@ -263,7 +263,7 @@ function Lightbox({
             >
               <CloseX />
             </button>
-            <div className="absolute top-[calc(100%+16px)] left-0 right-0 flex items-center justify-start">
+            <div className="absolute top-[calc(100%+16px)] right-0 left-0 flex items-center justify-start">
               <span className="text-[13px] font-medium tracking-[0.15em] text-white uppercase">
                 {photo.title}
               </span>

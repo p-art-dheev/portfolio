@@ -22,7 +22,7 @@ export function AvatarSwitcher({
     <button
       type="button"
       onClick={switchAvatar}
-      className="cursor-pointer rounded-full border-2 border-border bg-background p-1 shadow-sm ring-2 ring-foreground/10 ring-offset-2 ring-offset-background transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="border-border bg-background ring-foreground/10 ring-offset-background focus-visible:ring-ring cursor-pointer rounded-full border-2 p-1 shadow-sm ring-2 ring-offset-2 transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
       aria-label="Switch avatar"
     >
       <Image
@@ -34,7 +34,7 @@ export function AvatarSwitcher({
         fetchPriority="high"
         quality={75}
         sizes="128px"
-        className="size-28 rounded-full border border-border/70 object-cover sm:size-32"
+        className="border-border/70 size-28 rounded-full border object-cover sm:size-32"
       />
     </button>
   );
