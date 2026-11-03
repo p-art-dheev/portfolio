@@ -1,8 +1,10 @@
 import {
   SiCss,
+  SiFastapi,
   SiGit,
   SiGithub,
   SiHtml5,
+  SiHuggingface,
   SiJavascript,
   SiNextdotjs,
   SiNodedotjs,
@@ -10,7 +12,10 @@ import {
   SiPandas,
   SiPostgresql,
   SiPython,
+  SiPytorch,
   SiReact,
+  SiScikitlearn,
+  SiSupabase,
   SiTailwindcss,
   SiTypescript,
 } from "react-icons/si";
@@ -30,7 +35,12 @@ export type TechIconKey =
   | "css"
   | "javascript"
   | "numpy"
-  | "pandas";
+  | "pandas"
+  | "fastapi"
+  | "pytorch"
+  | "huggingface"
+  | "scikitlearn"
+  | "supabase";
 
 type TechIconConfig = {
   Icon: IconType;
@@ -53,4 +63,9 @@ export const techIconMap: Record<TechIconKey, TechIconConfig> = {
   javascript: { Icon: SiJavascript, color: "#F7DF1E" },
   numpy: { Icon: SiNumpy, color: "#013243", adaptive: true },
   pandas: { Icon: SiPandas, color: "#150458", adaptive: true },
+  fastapi: { Icon: SiFastapi, color: "#009688" },
+  pytorch: { Icon: SiPytorch, color: "#EE4C2C" },
+  huggingface: { Icon: SiHuggingface, color: "#FFD21E" },
+  scikitlearn: { Icon: SiScikitlearn, color: "#F7931E" },
+  supabase: { Icon: SiSupabase, color: "#3FCF8E" },
 };

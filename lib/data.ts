@@ -46,6 +46,10 @@ export const techStack: TechItem[] = [
   { label: "JavaScript", icon: "javascript" },
   { label: "NumPy", icon: "numpy" },
   { label: "pandas", icon: "pandas" },
+  { label: "FastAPI", icon: "fastapi" },
+  { label: "PyTorch", icon: "pytorch" },
+  { label: "Hugging Face", icon: "huggingface" },
+  { label: "Supabase", icon: "supabase" },
 ];
 
 // Fallback content when Supabase isn't configured. The live site reads
