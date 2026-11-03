@@ -35,7 +35,7 @@ export function TimeStatus({ className }: TimeStatusProps) {
     >
       <span className="inline-flex items-center gap-2">
         <span className="relative flex size-2.5">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
           <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
         </span>
         <span className="capitalize">{site.status}</span>

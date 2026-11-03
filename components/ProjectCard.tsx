@@ -50,7 +50,7 @@ function ProjectStatus({ status }: { status: ProjectStatus }) {
     <span className={`inline-flex items-center gap-2 text-sm ${styles.text}`}>
       <span className="relative flex size-2.5">
         <span
-          className={`absolute inline-flex size-full animate-ping rounded-full opacity-60 ${styles.ping}`}
+          className={`absolute inline-flex size-full animate-ping rounded-full opacity-60 motion-reduce:animate-none ${styles.ping}`}
         />
         <span
           className={`relative inline-flex size-2.5 rounded-full ${styles.dot}`}

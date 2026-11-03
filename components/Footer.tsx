@@ -8,9 +8,18 @@ export function Footer({ site }: { site: SiteContent }) {
   return (
     <footer className="border-border/80 mt-auto border-t">
       <Container className="flex flex-col gap-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-muted-foreground">
-          © {new Date().getFullYear()} {site.name}. Built for {site.domain}.
-        </p>
+        <div className="text-muted-foreground space-y-1">
+          <p>
+            © {new Date().getFullYear()} {site.name}. Built for {site.domain}.
+          </p>
+          <p className="text-xs">
+            This site uses Vercel Analytics
+            {process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID
+              ? " and Microsoft Clarity"
+              : ""}{" "}
+            to see how pages are used. No ads, no data sold.
+          </p>
+        </div>
         <div className="flex items-center gap-4">
           <a
             href={site.socials.linkedin}

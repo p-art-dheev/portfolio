@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { GitHubCalendar } from "react-github-calendar";
+import { ActivityCalendar } from "react-activity-calendar";
 
 import { Github } from "@/components/icons";
+import type { GithubContributions } from "@/lib/github";
 import { githubUsernameFromUrl } from "@/lib/sanitize";
 
 const githubTheme = {
@@ -26,7 +27,17 @@ const WEEKDAY_LABELS = [
 // label row (font size + 8px margin), then the 7 day rows.
 const GRID_TOP = Math.ceil(0.1 * HEATMAP_FONT_SIZE) + HEATMAP_FONT_SIZE + 8;
 
-export function GithubHeatmap({ githubUrl }: { githubUrl: string }) {
+/**
+ * Contribution data is fetched on the server (see lib/github.ts) and passed
+ * in, so the calendar is part of the prerendered HTML.
+ */
+export function GithubHeatmap({
+  githubUrl,
+  data,
+}: {
+  githubUrl: string;
+  data: GithubContributions | null;
+}) {
   const githubUsername = githubUsernameFromUrl(githubUrl);
   const [colorScheme, setColorScheme] = useState<"light" | "dark">("dark");
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -156,47 +167,63 @@ export function GithubHeatmap({ githubUrl }: { githubUrl: string }) {
             ))}
           </div>
         )}
-        <GitHubCalendar
-          username={githubUsername}
-          year="last"
-          blockSize={HEATMAP_BLOCK_SIZE}
-          blockMargin={HEATMAP_BLOCK_MARGIN}
-          blockRadius={2}
-          fontSize={HEATMAP_FONT_SIZE}
-          colorScheme={colorScheme}
-          theme={githubTheme}
-          tooltips={{
-            activity: {
-              text: (activity) => {
-                const date = new Date(
-                  `${activity.date}T00:00:00`,
-                ).toLocaleDateString(undefined, {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                });
-                const label =
-                  activity.count === 0
-                    ? "No contributions"
-                    : `${activity.count} contribution${
-                        activity.count === 1 ? "" : "s"
-                      }`;
-                return `${label} on ${date}`;
+        {data ? (
+          <ActivityCalendar
+            data={data.contributions}
+            maxLevel={4}
+            labels={{ totalCount: "{{count}} contributions in the last year" }}
+            blockSize={HEATMAP_BLOCK_SIZE}
+            blockMargin={HEATMAP_BLOCK_MARGIN}
+            blockRadius={2}
+            fontSize={HEATMAP_FONT_SIZE}
+            colorScheme={colorScheme}
+            theme={githubTheme}
+            tooltips={{
+              activity: {
+                text: (activity) => {
+                  const date = new Date(
+                    `${activity.date}T00:00:00`,
+                  ).toLocaleDateString(undefined, {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+                  const label =
+                    activity.count === 0
+                      ? "No contributions"
+                      : `${activity.count} contribution${
+                          activity.count === 1 ? "" : "s"
+                        }`;
+                  return `${label} on ${date}`;
+                },
+                withArrow: true,
+                placement: "top",
+                offset: 8,
+                hoverRestMs: 40,
+                transitionStyles: {
+                  initial: { opacity: 0 },
+                  open: { opacity: 1 },
+                  close: { opacity: 0 },
+                  duration: 130,
+                },
               },
-              withArrow: true,
-              placement: "top",
-              offset: 8,
-              hoverRestMs: 40,
-              transitionStyles: {
-                initial: { opacity: 0 },
-                open: { opacity: 1 },
-                close: { opacity: 0 },
-                duration: 130,
-              },
-            },
-          }}
-        />
+            }}
+          />
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            Contribution activity is unavailable right now.{" "}
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground underline underline-offset-2"
+            >
+              See it on GitHub
+            </a>
+            .
+          </p>
+        )}
       </div>
     </section>
   );
