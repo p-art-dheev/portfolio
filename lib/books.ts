@@ -13,7 +13,8 @@ export type Book = {
 export const books: Book[] = [
   {
     title: "Eat That Frog!",
-    subtitle: "21 Great Ways to Stop Procrastinating and Get More Done in Less Time",
+    subtitle:
+      "21 Great Ways to Stop Procrastinating and Get More Done in Less Time",
     author: "Brian Tracy",
     coverImage: {
       src: "/books/01.jpg",

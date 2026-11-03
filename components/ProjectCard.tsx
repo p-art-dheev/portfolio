@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import type { Project, ProjectStatus } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -112,7 +113,6 @@ function ProjectLinks({
 }) {
   const githubUrl = safeHref(project.githubUrl);
   const liveUrl = safeHref(project.liveUrl);
-  if (!githubUrl && !liveUrl) return null;
 
   const liveLabel = project.liveLabel?.trim() || "Live demo";
 
@@ -134,6 +134,20 @@ function ProjectLinks({
           </a>
         </Button>
       ) : null}
+      <Button
+        asChild
+        variant="outline"
+        size="sm"
+        className="group/case h-9 px-3.5"
+      >
+        <Link
+          href={`/projects/${project.slug}`}
+          aria-label={`Read the ${project.title} case study`}
+        >
+          Case study
+          <ArrowRight className="size-3.5 transition-transform group-hover/case:translate-x-0.5" />
+        </Link>
+      </Button>
       {liveUrl ? (
         <Button asChild size="sm" className="group/live ml-auto h-9 px-3.5">
           <a
@@ -153,11 +167,23 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div className="h-full transition-transform hover:-translate-y-1">
       <Card className="h-full transition-shadow hover:shadow-md">
-        <div className="px-(--card-spacing)">
+        <Link
+          href={`/projects/${project.slug}`}
+          tabIndex={-1}
+          aria-hidden
+          className="px-(--card-spacing)"
+        >
           <ProjectBanner project={project} />
-        </div>
+        </Link>
         <CardHeader>
-          <CardTitle>{project.title}</CardTitle>
+          <CardTitle>
+            <Link
+              href={`/projects/${project.slug}`}
+              className="hover:underline focus-visible:underline"
+            >
+              {project.title}
+            </Link>
+          </CardTitle>
           <CardAction>
             <ProjectStatus status={project.status} />
           </CardAction>

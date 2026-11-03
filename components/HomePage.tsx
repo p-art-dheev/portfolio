@@ -30,12 +30,12 @@ export async function HomePage() {
       className="flex flex-col gap-10 py-8 sm:gap-12 sm:py-12"
     >
       <Hero site={site} />
-      <EducationSection site={site} />
+      <FeaturedProjects projects={projects} />
       <AboutSection site={site} />
-      <ConnectSection site={site} />
       <TechStackGrid items={site.techStack} />
       <GithubHeatmap githubUrl={site.socials.github} data={github} />
-      <FeaturedProjects projects={projects} />
+      <EducationSection site={site} />
+      <ConnectSection site={site} />
       <ExploreSection />
     </Container>
   );

@@ -85,7 +85,8 @@ export function projectsJsonLd(projects: Project[]) {
           description: project.description,
           keywords: project.tags.join(", ") || undefined,
           codeRepository: project.githubUrl || undefined,
-          url: project.liveUrl || project.githubUrl || absoluteUrl("/projects"),
+          url: absoluteUrl(`/projects/${project.slug}`),
+          sameAs: project.liveUrl || undefined,
           image: project.banner ? toAbsolute(project.banner) : undefined,
           creativeWorkStatus:
             project.status === "live"
@@ -98,6 +99,51 @@ export function projectsJsonLd(projects: Project[]) {
       })),
     },
   };
+}
+
+export function projectJsonLd(project: Project) {
+  const url = absoluteUrl(`/projects/${project.slug}`);
+  const images = [project.banner, ...(project.gallery ?? [])]
+    .filter((src): src is string => Boolean(src))
+    .map(toAbsolute);
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
+      "@id": `${url}#project`,
+      name: project.title,
+      description: project.description,
+      abstract: project.problem || undefined,
+      url,
+      sameAs: project.liveUrl || undefined,
+      codeRepository: project.githubUrl || undefined,
+      keywords: project.tags.join(", ") || undefined,
+      image: images.length ? images : undefined,
+      video: project.videoUrl
+        ? {
+            "@type": "VideoObject",
+            name: project.title,
+            contentUrl: project.videoUrl,
+          }
+        : undefined,
+      author: personRef,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Projects",
+          item: absoluteUrl("/projects"),
+        },
+        { "@type": "ListItem", position: 3, name: project.title, item: url },
+      ],
+    },
+  ];
 }
 
 export function artworksJsonLd(artworks: ArtworkItem[]) {

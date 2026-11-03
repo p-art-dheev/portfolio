@@ -87,7 +87,9 @@ export default async function AdminHomePage() {
               </p>
               <p className="text-muted-foreground mt-1 text-xs">
                 {card.published} live
-                {drafts > 0 ? ` · ${drafts} draft${drafts === 1 ? "" : "s"}` : ""}
+                {drafts > 0
+                  ? ` · ${drafts} draft${drafts === 1 ? "" : "s"}`
+                  : ""}
                 {" · "}
                 {card.total} total
               </p>

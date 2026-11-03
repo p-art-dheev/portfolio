@@ -104,7 +104,11 @@ export function AdminShell({
             </Link>
           </Button>
           <form action={signOut}>
-            <Button type="submit" variant="ghost" className="w-full justify-start">
+            <Button
+              type="submit"
+              variant="ghost"
+              className="w-full justify-start"
+            >
               <LogOut className="size-4" />
               Sign out
             </Button>
@@ -115,7 +119,9 @@ export function AdminShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="border-border bg-background/80 sticky top-0 z-30 flex items-center justify-between gap-3 border-b px-4 py-3 backdrop-blur md:hidden">
           <div>
-            <p className="text-xs font-medium tracking-wide uppercase">Studio</p>
+            <p className="text-xs font-medium tracking-wide uppercase">
+              Studio
+            </p>
             <p className="text-sm font-medium">{current?.label ?? "Admin"}</p>
           </div>
           <div className="flex items-center gap-1.5">
@@ -126,7 +132,11 @@ export function AdminShell({
             </Button>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" aria-label="Open admin menu">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Open admin menu"
+                >
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>

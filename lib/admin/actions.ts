@@ -51,6 +51,14 @@ function num(formData: FormData, key: string, fallback: number) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+/** Non-empty trimmed lines of a textarea. */
+function lines(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
 function optionalUrl(value: string) {
   return value.length > 0 ? value : null;
 }
@@ -141,6 +149,15 @@ export async function saveProject(formData: FormData) {
   if ("error" in github) return { error: `GitHub URL: ${github.error}` };
   const live = linkUrl(str(formData, "live_url"));
   if ("error" in live) return { error: `Live URL: ${live.error}` };
+  const video = linkUrl(str(formData, "video_url"));
+  if ("error" in video) return { error: `Video URL: ${video.error}` };
+
+  const gallery: string[] = [];
+  for (const line of lines(str(formData, "gallery"))) {
+    const url = linkUrl(line);
+    if ("error" in url) return { error: `Screenshot: ${url.error}` };
+    if (url.value) gallery.push(url.value);
+  }
 
   const payload = {
     title,
@@ -158,10 +175,37 @@ export async function saveProject(formData: FormData) {
     featured: bool(formData, "featured"),
     published: bool(formData, "published"),
   };
+  const caseStudy = {
+    problem: str(formData, "problem"),
+    role: str(formData, "role"),
+    approach: str(formData, "approach"),
+    outcome: str(formData, "outcome"),
+    highlights: lines(str(formData, "highlights")).slice(0, 8),
+    gallery: gallery.slice(0, 12),
+    video_url: video.value,
+  };
 
-  let error: { message: string } | null;
+  let error: { message: string; code?: string } | null;
   if (id) {
-    ({ error } = await supabase.from("projects").update(payload).eq("id", id));
+    ({ error } = await supabase
+      .from("projects")
+      .update({ ...payload, ...caseStudy })
+      .eq("id", id));
+    // Before migrate-project-case-studies.sql runs, the case-study columns
+    // don't exist (PostgREST PGRST204). Save the rest and say what's missing.
+    if (error?.code === "PGRST204") {
+      ({ error } = await supabase
+        .from("projects")
+        .update(payload)
+        .eq("id", id));
+      if (!error) {
+        revalidatePublic();
+        return {
+          error:
+            "Saved, except the case-study fields: run supabase/migrate-project-case-studies.sql in Supabase first.",
+        };
+      }
+    }
   } else {
     // New projects go to the end of the list; reorder by dragging afterwards.
     const { data: last } = await supabase
@@ -173,11 +217,24 @@ export async function saveProject(formData: FormData) {
     const sort_order = (last?.sort_order ?? 0) + 10;
     ({ error } = await supabase
       .from("projects")
-      .insert({ ...payload, sort_order }));
+      .insert({ ...payload, ...caseStudy, sort_order }));
+    if (error?.code === "PGRST204") {
+      ({ error } = await supabase
+        .from("projects")
+        .insert({ ...payload, sort_order }));
+      if (!error) {
+        revalidatePublic();
+        return {
+          error:
+            "Saved, except the case-study fields: run supabase/migrate-project-case-studies.sql in Supabase first.",
+        };
+      }
+    }
   }
   if (error) return { error: error.message };
 
   revalidatePublic();
+  revalidatePath(`/projects/${slug}`);
   redirect("/admin/projects");
 }
 

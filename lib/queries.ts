@@ -99,6 +99,13 @@ type ProjectRow = {
   /** Pre-migration column; read only as a fallback until migrate-project-links.sql runs. */
   href?: string | null;
   status: string;
+  problem?: string | null;
+  role?: string | null;
+  approach?: string | null;
+  outcome?: string | null;
+  highlights?: string[] | null;
+  gallery?: string[] | null;
+  video_url?: string | null;
   featured: boolean;
   published: boolean;
   sort_order: number;
@@ -113,6 +120,14 @@ function toProject(row: ProjectRow): Project {
     tags: row.tags ?? [],
     ...projectLinks(row),
     status: asProjectStatus(row.status),
+    // Case-study columns exist once migrate-project-case-studies.sql has run.
+    problem: row.problem || undefined,
+    role: row.role || undefined,
+    approach: row.approach || undefined,
+    outcome: row.outcome || undefined,
+    highlights: row.highlights?.filter(Boolean) ?? [],
+    gallery: row.gallery?.filter(Boolean) ?? [],
+    videoUrl: row.video_url || undefined,
   };
 }
 
@@ -176,7 +191,7 @@ export const getSiteSettings = cache(async (): Promise<SiteContent> => {
   }
 });
 
-export async function getPublishedProjects(): Promise<Project[]> {
+export const getPublishedProjects = cache(async (): Promise<Project[]> => {
   if (!isSupabaseConfigured()) return featuredProjects;
 
   try {
@@ -192,6 +207,14 @@ export async function getPublishedProjects(): Promise<Project[]> {
   } catch {
     return featuredProjects;
   }
+});
+
+/** One published project for /projects/[slug]. */
+export async function getPublishedProject(
+  slug: string,
+): Promise<Project | null> {
+  const projects = await getPublishedProjects();
+  return projects.find((project) => project.slug === slug) ?? null;
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
