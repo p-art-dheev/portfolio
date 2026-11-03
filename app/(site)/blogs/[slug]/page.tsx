@@ -17,6 +17,7 @@ import {
   getSiteSettings,
 } from "@/lib/queries";
 import { sanitizePostHtml } from "@/lib/sanitize";
+import { PERSON_ID } from "@/lib/structured-data";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -30,7 +31,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description,
-    alternates: { canonical: `/blogs/${post.slug}` },
+    alternates: {
+      canonical: `/blogs/${post.slug}`,
+      types: { "text/markdown": `/blogs/${post.slug}.md` },
+    },
     keywords: post.tags,
     openGraph: {
       ...BASE_OPEN_GRAPH,
@@ -85,8 +89,18 @@ export default async function BlogPostPage({ params }: Props) {
       articleSection: post.category || undefined,
       wordCount: wordCount(post.contentHtml),
       inLanguage: "en",
-      author: { "@type": "Person", name: SITE_NAME, url: SITE_URL },
-      publisher: { "@type": "Person", name: SITE_NAME, url: SITE_URL },
+      author: {
+        "@type": "Person",
+        "@id": PERSON_ID,
+        name: SITE_NAME,
+        url: SITE_URL,
+      },
+      publisher: {
+        "@type": "Person",
+        "@id": PERSON_ID,
+        name: SITE_NAME,
+        url: SITE_URL,
+      },
     },
     {
       "@context": "https://schema.org",

@@ -30,6 +30,16 @@ const nextConfig: NextConfig = {
       ],
     }));
   },
+  // Markdown copies of blog posts for AI agents: /blogs/<slug>.md
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/blogs/:slug.md", destination: "/md/blogs/:slug" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
   experimental: {
     // Media uploads go through server actions (10 MB cap enforced there).
     serverActions: { bodySizeLimit: "12mb" },
