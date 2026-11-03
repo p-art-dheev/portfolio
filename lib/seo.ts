@@ -21,6 +21,16 @@ export const SITE_KEYWORDS = [
   "developer blog",
 ];
 
+/**
+ * Shared Open Graph fields. Next.js merges metadata shallowly, so a page that
+ * sets its own `openGraph` must spread this in or it loses these fields.
+ */
+export const BASE_OPEN_GRAPH = {
+  type: "website",
+  siteName: SITE_NAME,
+  locale: "en_US",
+} as const;
+
 export function absoluteUrl(path = "/") {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }

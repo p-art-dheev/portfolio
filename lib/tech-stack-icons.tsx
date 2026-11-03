@@ -51,6 +51,6 @@ export const techIconMap: Record<TechIconKey, TechIconConfig> = {
   html: { Icon: SiHtml5, color: "#E34F26" },
   css: { Icon: SiCss, color: "#1572B6" },
   javascript: { Icon: SiJavascript, color: "#F7DF1E" },
-  numpy: { Icon: SiNumpy, color: "#013243" },
-  pandas: { Icon: SiPandas, color: "#150458" },
+  numpy: { Icon: SiNumpy, color: "#013243", adaptive: true },
+  pandas: { Icon: SiPandas, color: "#150458", adaptive: true },
 };

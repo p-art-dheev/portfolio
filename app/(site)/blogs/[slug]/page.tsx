@@ -4,7 +4,13 @@ import { notFound } from "next/navigation";
 import { BlogArticle } from "@/components/blog/BlogArticle";
 import { Container } from "@/components/Container";
 import { relatedPosts, wordCount } from "@/lib/blog";
-import { SITE_NAME, SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import {
+  BASE_OPEN_GRAPH,
+  SITE_NAME,
+  SITE_URL,
+  absoluteUrl,
+  jsonLdString,
+} from "@/lib/seo";
 import {
   getPublishedPost,
   getPublishedPosts,
@@ -27,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: `/blogs/${post.slug}` },
     keywords: post.tags,
     openGraph: {
+      ...BASE_OPEN_GRAPH,
       type: "article",
       title: post.title,
       description,

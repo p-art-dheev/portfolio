@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { site } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
+// Always Pardheev's local time (IST), whatever the visitor's time zone.
 const clockFormatter = new Intl.DateTimeFormat(undefined, {
+  timeZone: "Asia/Kolkata",
   weekday: "short",
   hour: "numeric",
   minute: "2-digit",

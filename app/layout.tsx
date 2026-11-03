@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { ThemeScript } from "@/components/ThemeScript";
 import {
+  BASE_OPEN_GRAPH,
   SITE_DESCRIPTION,
   SITE_KEYWORDS,
   SITE_NAME,
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: `${SITE_NAME} | Full-Stack Developer Portfolio`,
-    template: "%s · Pardheev",
+    template: `%s · ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
   keywords: SITE_KEYWORDS,
@@ -46,9 +47,7 @@ export const metadata: Metadata = {
     types: { "application/rss+xml": "/blogs/rss.xml" },
   },
   openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    locale: "en_US",
+    ...BASE_OPEN_GRAPH,
     url: "/",
     title: `${SITE_NAME} | Full-Stack Developer Portfolio`,
     description: SITE_DESCRIPTION,

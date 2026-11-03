@@ -2,13 +2,26 @@ import type { Metadata } from "next";
 
 import { BooksPage } from "@/components/BooksPage";
 import { getPublishedBooks } from "@/lib/queries";
+import { BASE_OPEN_GRAPH } from "@/lib/seo";
+
+const DESCRIPTION =
+  "Books on philosophy, psychology, and productivity that Pardheev has been reading and returning to.";
 
 export const metadata: Metadata = {
   title: "Books",
-  description:
-    "Books on philosophy, psychology, and productivity that Pardheev has been reading and returning to.",
+  description: DESCRIPTION,
   alternates: { canonical: "/books" },
-  openGraph: { title: "Books", url: "/books" },
+  openGraph: {
+    ...BASE_OPEN_GRAPH,
+    title: "Books",
+    description: DESCRIPTION,
+    url: "/books",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Books",
+    description: DESCRIPTION,
+  },
 };
 
 export default async function BooksRoute() {
