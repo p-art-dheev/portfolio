@@ -8,6 +8,7 @@ import { ChevronDown, Menu } from "lucide-react";
 import { moreLinks, navLinks } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/Container";
+import { SoundToggle } from "@/components/SoundToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -103,6 +104,7 @@ export function Navbar({ domain }: { domain: string }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <SoundToggle />
           <ThemeToggle />
 
           {mounted ? (
