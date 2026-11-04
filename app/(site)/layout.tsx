@@ -1,6 +1,7 @@
 import { ClarityScript } from "@/components/ClarityScript";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { SoundEffects } from "@/components/SoundEffects";
 import { getSiteSettings } from "@/lib/queries";
 
 // Public pages are static. Admin saves revalidate them on demand; this is a
@@ -20,6 +21,7 @@ export default async function SiteLayout({
       <main className="flex-1">{children}</main>
       <Footer site={site} />
       <ClarityScript />
+      <SoundEffects />
     </>
   );
 }

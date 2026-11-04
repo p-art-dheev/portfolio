@@ -365,3 +365,19 @@
   height: 0;
   pointer-events: none;
 }
+
+/* Theme toggle circular reveal (ThemeToggle.tsx). The browser's default
+   cross-fade is turned off so only the clip-path circle animates. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* While the theme swaps, skip per-element color transitions so the revealed
+   area shows the final colors instead of fading through them. */
+html[data-theme-switching] *,
+html[data-theme-switching] *::before,
+html[data-theme-switching] *::after {
+  transition: none !important;
+}
