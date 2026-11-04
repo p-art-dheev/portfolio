@@ -1,5 +1,3 @@
-"use client";
-
 import { Book } from "@/components/Book";
 import { Container } from "@/components/Container";
 import type { BookItem } from "@/lib/content-types";
@@ -11,17 +9,18 @@ export function BooksPage({ books }: { books: BookItem[] }) {
       <p className="text-muted-foreground mt-3 max-w-xl">
         A few titles that have stuck with me.
       </p>
-      <div className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-12 py-6">
+      <ul className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-12 py-6">
         {books.map((book) => (
-          <Book
-            key={book.title}
-            image={book.coverImage.src}
-            title={book.title}
-            author={book.author}
-            alt={book.coverImage.alt}
-          />
+          <li key={book.title}>
+            <Book
+              image={book.coverImage.src}
+              title={book.title}
+              author={book.author}
+              alt={book.coverImage.alt}
+            />
+          </li>
         ))}
-      </div>
+      </ul>
     </Container>
   );
 }

@@ -25,7 +25,6 @@ export function personSchema(site: SiteContent) {
     alternateName: site.name,
     url: SITE_URL,
     image: site.avatars[0] ? toAbsolute(site.avatars[0]) : undefined,
-    email: `mailto:${site.socials.email}`,
     jobTitle: site.role,
     description: SITE_DESCRIPTION,
     knowsAbout: site.techStack.map((item) => item.label),

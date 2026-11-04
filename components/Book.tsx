@@ -1,4 +1,7 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
+
+import { canOptimize } from "@/lib/images";
 
 type BookProps = {
   image: string;
@@ -25,15 +28,13 @@ export function Book({ image, title, author, alt }: BookProps) {
   // doesn't need the motion library. Server-rendered, no client JS.
   return (
     <div
-      className={`group relative flex h-[305px] w-[200px] cursor-pointer items-center justify-center overflow-visible [box-shadow:var(--book-rest)] transition-shadow motion-safe:hover:[box-shadow:var(--book-hover)] ${ease}`}
+      className={`group relative flex h-[305px] w-[200px] items-center justify-center overflow-visible [box-shadow:var(--book-rest)] transition-shadow motion-safe:hover:[box-shadow:var(--book-hover)] ${ease}`}
       style={
         {
           "--book-rest": restShadow,
           "--book-hover": hoverShadow,
         } as CSSProperties
       }
-      aria-label={`${title} by ${author}`}
-      role="img"
     >
       <div
         className={`relative flex h-full w-full [transform:perspective(1200px)_translateZ(0)] flex-col items-center justify-center transition-transform [transform-style:preserve-3d] motion-safe:group-hover:origin-right motion-safe:group-hover:[transform:perspective(1200px)_translateZ(50px)] ${ease}`}
@@ -54,17 +55,29 @@ export function Book({ image, title, author, alt }: BookProps) {
         <div
           className={`absolute inset-0 z-[1] origin-left [transform:rotateY(0deg)_translateZ(0)] overflow-hidden transition-transform [transform-style:preserve-3d] motion-safe:group-hover:[transform:rotateY(-70deg)_translateZ(10px)] ${ease}`}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={image}
-            alt={alt || title}
-            width={200}
-            height={305}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover"
-            draggable={false}
-          />
+          {canOptimize(image) ? (
+            <Image
+              src={image}
+              alt={alt || `Cover of ${title}`}
+              width={200}
+              height={305}
+              sizes="200px"
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={image}
+              alt={alt || `Cover of ${title}`}
+              width={200}
+              height={305}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          )}
           <div
             className="absolute inset-y-0 left-0 z-[1] w-[18px]"
             style={{
