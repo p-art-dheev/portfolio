@@ -37,6 +37,8 @@ const geistMono = Geist_Mono({
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   weight: "400",
+  // Italic is used in the navbar logo (".dev").
+  style: ["normal", "italic"],
   subsets: ["latin"],
   display: "swap",
   preload: true,

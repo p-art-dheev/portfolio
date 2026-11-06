@@ -8,6 +8,7 @@ import { ChevronDown, Menu } from "lucide-react";
 import { moreLinks, navLinks } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { CommandMenu } from "@/components/CommandMenu";
+import { Logo } from "@/components/Logo";
 import { Container } from "@/components/Container";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -94,8 +95,12 @@ export function Navbar({ domain }: { domain: string }) {
   return (
     <header className="border-border/80 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-md">
       <Container className="flex h-14 items-center justify-between gap-4">
-        <Link href="/" className="font-medium tracking-tight">
-          {domain}
+        <Link
+          href="/"
+          aria-label={`${domain}, home`}
+          className="group/logo -my-1 rounded-md py-1"
+        >
+          <Logo domain={domain} />
         </Link>
 
         <nav
