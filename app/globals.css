@@ -83,10 +83,10 @@
   --sidebar-border: #dcd3c1;
   --sidebar-ring: #a89d88;
 
-  /* Paper grain: brown-tinted fractal noise, multiplied into the page. */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 1.1 -0.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --grain-opacity: 0.32;
-  --grain-blend: multiply;
+  /* Paper texture, painted only on the page background (never over text,
+     cards or images): a soft cloudy tone variation plus a whisper of fiber. */
+  --paper-mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0075' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.33 0 0 0 0 0.22 0.16 0 0 0 -0.04'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --paper-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.29 0 0 0 0 0.2 0.07 0 0 0 -0.015'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Warm charcoal: the same paper, as if seen at night. */
@@ -123,10 +123,9 @@
   --sidebar-border: rgb(237 230 216 / 10%);
   --sidebar-ring: #7a7164;
 
-  /* Pale grain lifted onto the dark page instead of multiplied. */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.93 0 0 0 0 0.89 0 0 0 0 0.82 0 0 0 1.1 -0.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --grain-opacity: 0.12;
-  --grain-blend: screen;
+  /* Same paper texture, in pale ink on the dark page. */
+  --paper-mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0075' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.93 0 0 0 0 0.89 0 0 0 0 0.82 0.07 0 0 0 -0.02'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --paper-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.93 0 0 0 0 0.89 0 0 0 0 0.82 0.035 0 0 0 -0.008'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @layer base {
@@ -135,19 +134,10 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-  /* Paper texture over the whole page, cards included, so every surface
-     reads as the same sheet. It never takes clicks. */
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    pointer-events: none;
-    background-image: var(--grain);
-    background-size: 240px 240px;
-    opacity: var(--grain-opacity);
-    mix-blend-mode: var(--grain-blend);
+    background-image: var(--paper-fiber), var(--paper-mottle);
+    background-size:
+      180px 180px,
+      640px 640px;
   }
   html {
     @apply font-sans;
