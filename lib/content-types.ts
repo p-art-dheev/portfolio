@@ -7,6 +7,8 @@ export type Project = {
   title: string;
   description: string;
   banner?: string;
+  /** Tiny blurred preview of `banner`, shown while it loads. */
+  bannerBlur?: string;
   tags: string[];
   githubUrl?: string;
   liveUrl?: string;
@@ -55,7 +57,13 @@ export type SiteContent = {
 export type ArtworkItem = {
   id?: string;
   title: string;
-  image: { src: string; alt: string; width: number; height: number };
+  image: {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+    blurDataURL?: string;
+  };
   link?: string;
 };
 
@@ -64,7 +72,7 @@ export type BookItem = {
   title: string;
   subtitle: string;
   author: string;
-  coverImage: { src: string; alt: string };
+  coverImage: { src: string; alt: string; blurDataURL?: string };
 };
 
 export type PostListItem = {
@@ -72,6 +80,8 @@ export type PostListItem = {
   title: string;
   excerpt: string;
   coverUrl: string | null;
+  /** Tiny blurred preview of the cover, shown while it loads. */
+  coverBlur?: string;
   publishedAt: string | null;
   tags: string[];
   category: string;

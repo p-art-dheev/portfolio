@@ -1,21 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
-/** Thin bar under the navbar showing how far through the article you are. */
+/**
+ * Thin ink-blue bar across the top of the window showing how far through
+ * the article you are. Updated straight on the element (no React state) on
+ * animation frames, and drawn with a transform, so scrolling stays smooth.
+ */
 export function ReadingProgress({ targetId }: { targetId: string }) {
-  const [progress, setProgress] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const target = document.getElementById(targetId);
-    if (!target) return;
+    const bar = barRef.current;
+    if (!target || !bar) return;
     let frame = 0;
     const update = () => {
       frame = 0;
       const rect = target.getBoundingClientRect();
       const total = rect.height - window.innerHeight * 0.6;
       const done = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
-      setProgress(total > 0 ? done / total : 1);
+      const progress = total > 0 ? done / total : 1;
+      bar.style.transform = `scaleX(${progress})`;
     };
     const onScroll = () => {
       if (!frame) frame = window.requestAnimationFrame(update);
@@ -31,13 +37,11 @@ export function ReadingProgress({ targetId }: { targetId: string }) {
   }, [targetId]);
 
   return (
-    <div
-      aria-hidden
-      className="fixed inset-x-0 top-0 z-[60] h-0.5 bg-transparent"
-    >
+    <div aria-hidden className="fixed inset-x-0 top-0 z-[60] h-[3px]">
       <div
-        className="bg-foreground h-full origin-left transition-[width] duration-100"
-        style={{ width: `${Math.round(progress * 100)}%` }}
+        ref={barRef}
+        className="bg-link h-full origin-left rounded-r-full"
+        style={{ transform: "scaleX(0)" }}
       />
     </div>
   );

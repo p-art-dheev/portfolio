@@ -1,5 +1,7 @@
 import { cache } from "react";
 
+import { blurDataURL, withBlur } from "@/lib/blur";
+
 import type { TechIconKey } from "@/lib/tech-stack-icons";
 import { techIconMap } from "@/lib/tech-stack-icons";
 import type {
@@ -191,7 +193,7 @@ export const getSiteSettings = cache(async (): Promise<SiteContent> => {
   }
 });
 
-export const getPublishedProjects = cache(async (): Promise<Project[]> => {
+const getPublishedProjectsRaw = cache(async (): Promise<Project[]> => {
   if (!isSupabaseConfigured()) return featuredProjects;
 
   try {
@@ -217,7 +219,7 @@ export async function getPublishedProject(
   return projects.find((project) => project.slug === slug) ?? null;
 }
 
-export async function getFeaturedProjects(): Promise<Project[]> {
+async function getFeaturedProjectsRaw(): Promise<Project[]> {
   if (!isSupabaseConfigured()) return featuredProjects;
 
   try {
@@ -236,7 +238,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
   }
 }
 
-export async function getPublishedArtworks(): Promise<ArtworkItem[]> {
+async function getPublishedArtworksRaw(): Promise<ArtworkItem[]> {
   if (!isSupabaseConfigured()) return fallbackArtworks;
 
   try {
@@ -264,7 +266,7 @@ export async function getPublishedArtworks(): Promise<ArtworkItem[]> {
   }
 }
 
-export async function getPublishedBooks(): Promise<BookItem[]> {
+async function getPublishedBooksRaw(): Promise<BookItem[]> {
   if (!isSupabaseConfigured()) return fallbackBooks;
 
   try {
@@ -413,7 +415,7 @@ async function readCounts(
   return counts;
 }
 
-export const getPublishedPosts = cache(async (): Promise<PostListItem[]> => {
+const getPublishedPostsRaw = cache(async (): Promise<PostListItem[]> => {
   if (!isSupabaseConfigured()) return [];
 
   try {
@@ -442,7 +444,7 @@ export const getPublishedPosts = cache(async (): Promise<PostListItem[]> => {
   }
 });
 
-export const getPublishedPost = cache(
+const getPublishedPostRaw = cache(
   async (slug: string): Promise<PostDetail | null> => {
     if (!isSupabaseConfigured()) return null;
 
@@ -706,3 +708,60 @@ export async function getPostFeed(): Promise<PostFeedItem[]> {
     return [];
   }
 }
+
+// ---------------------------------------------------------------------------
+// Public reads with blur-up previews attached (see lib/blur.ts). The previews
+// are made on the server while the page builds, so pages stay static.
+
+const withBannerBlur = (projects: Project[]) =>
+  withBlur(
+    projects,
+    (project) => project.banner,
+    (project, bannerBlur) => ({ ...project, bannerBlur }),
+  );
+
+export const getPublishedProjects = cache(async (): Promise<Project[]> =>
+  withBannerBlur(await getPublishedProjectsRaw()),
+);
+
+export async function getFeaturedProjects(): Promise<Project[]> {
+  return withBannerBlur(await getFeaturedProjectsRaw());
+}
+
+export async function getPublishedArtworks(): Promise<ArtworkItem[]> {
+  return withBlur(
+    await getPublishedArtworksRaw(),
+    (artwork) => artwork.image.src,
+    (artwork, blurDataURL) => ({
+      ...artwork,
+      image: { ...artwork.image, blurDataURL },
+    }),
+  );
+}
+
+export async function getPublishedBooks(): Promise<BookItem[]> {
+  return withBlur(
+    await getPublishedBooksRaw(),
+    (book) => book.coverImage.src,
+    (book, blurDataURL) => ({
+      ...book,
+      coverImage: { ...book.coverImage, blurDataURL },
+    }),
+  );
+}
+
+export const getPublishedPosts = cache(async (): Promise<PostListItem[]> =>
+  withBlur(
+    await getPublishedPostsRaw(),
+    (post) => post.coverUrl,
+    (post, coverBlur) => ({ ...post, coverBlur }),
+  ),
+);
+
+export const getPublishedPost = cache(
+  async (slug: string): Promise<PostDetail | null> => {
+    const post = await getPublishedPostRaw(slug);
+    if (!post) return null;
+    return { ...post, coverBlur: await blurDataURL(post.coverUrl) };
+  },
+);

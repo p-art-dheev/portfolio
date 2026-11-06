@@ -37,7 +37,15 @@ function Section({ title, text }: { title: string; text?: string }) {
   );
 }
 
-function Screenshot({ src, alt }: { src: string; alt: string }) {
+function Screenshot({
+  src,
+  alt,
+  blur,
+}: {
+  src: string;
+  alt: string;
+  blur?: string;
+}) {
   const className =
     "border-border aspect-video w-full rounded-xl border object-cover object-top";
   return canOptimize(src) ? (
@@ -47,6 +55,8 @@ function Screenshot({ src, alt }: { src: string; alt: string }) {
       width={1600}
       height={900}
       sizes="(min-width: 768px) 672px, 100vw"
+      placeholder={blur ? "blur" : "empty"}
+      blurDataURL={blur}
       className={className}
     />
   ) : (
@@ -129,7 +139,11 @@ export function ProjectDetail({
 
       {project.banner ? (
         <div className="mt-8">
-          <Screenshot src={project.banner} alt={`${project.title} banner`} />
+          <Screenshot
+            src={project.banner}
+            alt={`${project.title} banner`}
+            blur={project.bannerBlur}
+          />
         </div>
       ) : null}
 

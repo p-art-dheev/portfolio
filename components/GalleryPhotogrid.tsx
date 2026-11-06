@@ -12,6 +12,8 @@ export type GalleryPhoto = {
   title: string;
   width: number;
   height: number;
+  /** Tiny blurred preview shown while the image loads. */
+  blurDataURL?: string;
 };
 
 type GalleryPhotogridProps = {
@@ -122,6 +124,8 @@ function GridItem({
         height={photo.height}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 28vw"
         quality={85}
+        placeholder={photo.blurDataURL ? "blur" : "empty"}
+        blurDataURL={photo.blurDataURL}
         className="block h-auto w-full origin-center object-cover will-change-transform"
         style={{
           transform: hov ? "scale(1.05)" : "scale(1)",

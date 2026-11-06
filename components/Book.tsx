@@ -8,6 +8,8 @@ type BookProps = {
   title: string;
   author: string;
   alt?: string;
+  /** Tiny blurred preview shown while the cover loads. */
+  blurDataURL?: string;
 };
 
 const restShadow =
@@ -23,7 +25,7 @@ const ease = "duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
  * Port of Framer Book
  * https://framer.com/m/Book-AFRs.js@mxOP9zughWqzCr7yH17p
  */
-export function Book({ image, title, author, alt }: BookProps) {
+export function Book({ image, title, author, alt, blurDataURL }: BookProps) {
   // Plain CSS 3D transforms on hover (motion-safe only), so the Books page
   // doesn't need the motion library. Server-rendered, no client JS.
   return (
@@ -62,6 +64,8 @@ export function Book({ image, title, author, alt }: BookProps) {
               width={200}
               height={305}
               sizes="200px"
+              placeholder={blurDataURL ? "blur" : "empty"}
+              blurDataURL={blurDataURL}
               className="h-full w-full object-cover"
               draggable={false}
             />

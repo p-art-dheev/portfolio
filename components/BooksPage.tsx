@@ -19,6 +19,7 @@ export function BooksPage({ books }: { books: BookItem[] }) {
               title={book.title}
               author={book.author}
               alt={book.coverImage.alt}
+              blurDataURL={book.coverImage.blurDataURL}
             />
           </li>
         ))}

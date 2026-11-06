@@ -7,6 +7,7 @@ import { ChevronDown, Menu } from "lucide-react";
 
 import { moreLinks, navLinks } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { CommandMenu } from "@/components/CommandMenu";
 import { Container } from "@/components/Container";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -171,6 +172,7 @@ export function Navbar({ domain }: { domain: string }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <CommandMenu />
           <ThemeToggle />
 
           {mounted ? (

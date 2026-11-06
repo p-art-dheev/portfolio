@@ -84,6 +84,8 @@ function ProjectBanner({ project }: { project: Project }) {
       height={360}
       quality={75}
       sizes="(min-width: 640px) 40vw, 90vw"
+      placeholder={project.bannerBlur ? "blur" : "empty"}
+      blurDataURL={project.bannerBlur}
       onError={() => setHasError(true)}
       className="project-print aspect-video w-full object-cover"
     />

@@ -9,6 +9,7 @@ import {
   BlogEngagementPreview,
 } from "@/components/blog/BlogEngagement";
 import { ReadingProgress } from "@/components/blog/ReadingProgress";
+import { TableOfContents } from "@/components/blog/TableOfContents";
 import { categoryTone, formatPostDate, withHeadingAnchors } from "@/lib/blog";
 import type {
   PostDetail,
@@ -22,6 +23,7 @@ type ArticlePost = Pick<
   | "title"
   | "excerpt"
   | "coverUrl"
+  | "coverBlur"
   | "coverAlt"
   | "publishedAt"
   | "tags"
@@ -149,6 +151,8 @@ export function BlogArticle({
                 fill
                 priority
                 sizes="(min-width: 768px) 672px, 100vw"
+                placeholder={post.coverBlur ? "blur" : "empty"}
+                blurDataURL={post.coverBlur}
                 className="object-cover"
               />
             )}
@@ -156,8 +160,8 @@ export function BlogArticle({
         </figure>
       ) : null}
 
-      {toc.length >= 3 ? (
-        <details className="border-border bg-muted/20 group mt-8 rounded-xl border px-4 py-3 text-sm">
+      {toc.length >= 2 ? (
+        <details className="border-border bg-muted/20 group mt-8 rounded-xl border px-4 py-3 text-sm xl:hidden">
           <summary className="flex cursor-pointer list-none items-center gap-2 font-medium select-none">
             <ListTree className="text-muted-foreground size-4" />
             In this post
@@ -183,10 +187,21 @@ export function BlogArticle({
         </details>
       ) : null}
 
-      <div
-        className="blog-content blog-article mt-10"
-        dangerouslySetInnerHTML={{ __html: body }}
-      />
+      <div className="relative mt-10">
+        {toc.length >= 2 && !preview ? (
+          // Wide screens: the contents follow you down the page beside the
+          // article (there is room past the 672px column from 1280px up).
+          <aside className="absolute top-0 left-full ml-12 hidden h-full w-56 xl:block">
+            <div className="sticky top-24">
+              <TableOfContents items={toc} />
+            </div>
+          </aside>
+        ) : null}
+        <div
+          className="blog-content blog-article"
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
+      </div>
 
       {post.tags.length > 0 ? (
         <ul

@@ -11,6 +11,7 @@ export function ArtworksPage({ artworks }: { artworks: ArtworkItem[] }) {
     title: artwork.title,
     width: artwork.image.width,
     height: artwork.image.height,
+    blurDataURL: artwork.image.blurDataURL,
   }));
 
   return (

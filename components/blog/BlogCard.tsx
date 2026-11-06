@@ -40,6 +40,8 @@ function Cover({
           fill
           priority={priority}
           sizes={sizes}
+          placeholder={post.coverBlur ? "blur" : "empty"}
+          blurDataURL={post.coverBlur}
           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
       ) : (

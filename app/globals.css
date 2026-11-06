@@ -50,48 +50,50 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Warm Ivory paper. Ink-brown text on cream instead of black on white. */
+/* White paper: clean white with neutral ink, plus a whisper of paper grain
+   (no warm tint). */
 :root {
-  --background: #f4efe4;
-  --foreground: #2a251e;
-  --card: #f9f5ec;
-  --card-foreground: #2a251e;
-  --popover: #f9f5ec;
-  --popover-foreground: #2a251e;
-  --primary: #2a251e;
-  --primary-foreground: #f7f2e8;
-  --secondary: #eae3d4;
-  --secondary-foreground: #2a251e;
-  --muted: #eae3d4;
-  --muted-foreground: #6e6556;
-  --accent: #e6dece;
-  --accent-foreground: #2a251e;
-  --destructive: #b3452e;
-  --border: #dcd3c1;
-  --input: #d6ccb8;
+  --background: #ffffff;
+  --foreground: #1b1b1f;
+  --card: #ffffff;
+  --card-foreground: #1b1b1f;
+  --popover: #ffffff;
+  --popover-foreground: #1b1b1f;
+  --primary: #1b1b1f;
+  --primary-foreground: #fafafa;
+  --secondary: #f3f3f4;
+  --secondary-foreground: #1b1b1f;
+  --muted: #f3f3f4;
+  --muted-foreground: #62626b;
+  --accent: #eeeef0;
+  --accent-foreground: #1b1b1f;
+  --destructive: #c2362b;
+  --border: #e5e5e8;
+  --input: #dcdce0;
   --ring: #2e5488;
   /* The one accent: fountain-pen ink blue. Links, the active nav item,
      eyebrows, status dot, focus rings and text selection only. */
   --link: #2e5488;
-  --chart-1: #d6ccb8;
-  --chart-2: #8f846f;
-  --chart-3: #6e6556;
-  --chart-4: #4f473b;
-  --chart-5: #3a342b;
+  --chart-1: #dcdce0;
+  --chart-2: #a1a1aa;
+  --chart-3: #71717a;
+  --chart-4: #52525b;
+  --chart-5: #3f3f46;
   --radius: 0.625rem;
-  --sidebar: #efe9dc;
-  --sidebar-foreground: #2a251e;
-  --sidebar-primary: #2a251e;
-  --sidebar-primary-foreground: #f7f2e8;
-  --sidebar-accent: #e6dece;
-  --sidebar-accent-foreground: #2a251e;
-  --sidebar-border: #dcd3c1;
+  --sidebar: #fafafa;
+  --sidebar-foreground: #1b1b1f;
+  --sidebar-primary: #1b1b1f;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #eeeef0;
+  --sidebar-accent-foreground: #1b1b1f;
+  --sidebar-border: #e5e5e8;
   --sidebar-ring: #2e5488;
 
   /* Paper texture, painted only on the page background (never over text,
-     cards or images): a soft cloudy tone variation plus a whisper of fiber. */
-  --paper-mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0075' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.33 0 0 0 0 0.22 0.16 0 0 0 -0.04'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --paper-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.29 0 0 0 0 0.2 0.07 0 0 0 -0.015'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+     cards or images): a faint neutral tone variation plus fine fiber, both
+     grey so the page stays white. */
+  --paper-mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0075' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.35 0 0 0 0 0.37 0.09 0 0 0 -0.025'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --paper-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.3 0 0 0 0 0.32 0.075 0 0 0 -0.015'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Warm charcoal: the same paper, as if seen at night. */
@@ -160,7 +162,7 @@
   --gap: 3px;
   --months: 20px;
   /* Moss: muted olive greens that sit in the warm paper palette. */
-  --l0: #e3dbca;
+  --l0: #ebebee;
   --l1: #cdd2a2;
   --l2: #a1ae66;
   --l3: #718441;
@@ -613,4 +615,18 @@ html[data-theme-switching] *::after {
   [data-slot="card"]:hover .project-print {
     transform: none;
   }
+}
+
+/* 404: the number drawn as an ink outline. */
+.not-found-number {
+  color: transparent;
+  -webkit-text-stroke: 1.25px
+    color-mix(in oklab, var(--foreground) 70%, transparent);
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+
+/* Blog: headings land below the sticky navbar when jumped to. */
+.blog-content :is(h2, h3)[id] {
+  scroll-margin-top: 5.5rem;
 }

@@ -90,6 +90,7 @@ export function ThemeToggle() {
   return (
     <Button
       ref={buttonRef}
+      data-theme-toggle
       type="button"
       variant="outline"
       size="icon"
