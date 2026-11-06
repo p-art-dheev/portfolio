@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityCalendar } from "react-activity-calendar";
 
 import { Github } from "@/components/icons";
@@ -27,6 +27,25 @@ const WEEKDAY_LABELS = [
 // label row (font size + 8px margin), then the 7 day rows.
 const GRID_TOP = Math.ceil(0.1 * HEATMAP_FONT_SIZE) + HEATMAP_FONT_SIZE + 8;
 
+// One formatter, created once. toLocaleDateString(..., options) builds a new
+// Intl formatter on every call, which adds up across a year of tiles.
+const dateFormat = new Intl.DateTimeFormat(undefined, {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+function tooltipText(date: string, count: number) {
+  const label =
+    count === 0
+      ? "No contributions"
+      : `${count} contribution${count === 1 ? "" : "s"}`;
+  return `${label} on ${dateFormat.format(new Date(`${date}T00:00:00`))}`;
+}
+
+type Tip = { text: string; x: number; y: number; arrowX: number };
+
 /**
  * Contribution data is fetched on the server (see lib/github.ts) and passed
  * in, so the calendar is part of the prerendered HTML.
@@ -43,6 +62,35 @@ export function GithubHeatmap({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [hasGrid, setHasGrid] = useState(false);
   const [edges, setEdges] = useState({ start: true, end: true });
+  const [tip, setTip] = useState<Tip | null>(null);
+  const tipRef = useRef<HTMLDivElement>(null);
+
+  const counts = useMemo(
+    () => new Map(data?.contributions.map((d) => [d.date, d.count]) ?? []),
+    [data],
+  );
+
+  // A single tooltip for the whole calendar, driven by event delegation.
+  // The library's own tooltips mount a floating-ui instance per tile (~370
+  // of them), which froze the main thread for 20+ seconds on load.
+  function showTip(target: EventTarget) {
+    const wrapper = wrapperRef.current;
+    if (!wrapper || !(target instanceof SVGRectElement)) return;
+    const date = target.dataset.date;
+    if (!date) return;
+    const box = wrapper.getBoundingClientRect();
+    const tile = target.getBoundingClientRect();
+    const centre = tile.left + tile.width / 2 - box.left;
+    // Keep the bubble inside the section; the arrow still points at the tile.
+    const half = (tipRef.current?.offsetWidth ?? 200) / 2;
+    const x = Math.min(Math.max(centre, half), box.width - half);
+    setTip({
+      text: tooltipText(date, counts.get(date) ?? 0),
+      x,
+      y: tile.top - box.top - 8,
+      arrowX: centre - x,
+    });
+  }
 
   useEffect(() => {
     const updateColorScheme = () => {
@@ -144,7 +192,23 @@ export function GithubHeatmap({
         className="heatmap relative pl-8"
         data-at-start={edges.start || undefined}
         data-at-end={edges.end || undefined}
+        onPointerOver={(e) => showTip(e.target)}
+        onPointerLeave={() => setTip(null)}
+        onScrollCapture={() => setTip(null)}
       >
+        <div
+          ref={tipRef}
+          role="tooltip"
+          className="heatmap-tooltip"
+          data-open={tip ? "" : undefined}
+          style={tip ? { left: tip.x, top: tip.y } : undefined}
+        >
+          {tip?.text}
+          <span
+            className="heatmap-tooltip-arrow"
+            style={{ left: `calc(50% + ${tip?.arrowX ?? 0}px)` }}
+          />
+        </div>
         {hasGrid && (
           <div
             className="text-muted-foreground pointer-events-none absolute top-0 left-0"
@@ -178,37 +242,6 @@ export function GithubHeatmap({
             fontSize={HEATMAP_FONT_SIZE}
             colorScheme={colorScheme}
             theme={githubTheme}
-            tooltips={{
-              activity: {
-                text: (activity) => {
-                  const date = new Date(
-                    `${activity.date}T00:00:00`,
-                  ).toLocaleDateString(undefined, {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  });
-                  const label =
-                    activity.count === 0
-                      ? "No contributions"
-                      : `${activity.count} contribution${
-                          activity.count === 1 ? "" : "s"
-                        }`;
-                  return `${label} on ${date}`;
-                },
-                withArrow: true,
-                placement: "top",
-                offset: 8,
-                hoverRestMs: 40,
-                transitionStyles: {
-                  initial: { opacity: 0 },
-                  open: { opacity: 1 },
-                  close: { opacity: 0 },
-                  duration: 130,
-                },
-              },
-            }}
           />
         ) : (
           <p className="text-muted-foreground text-sm">
