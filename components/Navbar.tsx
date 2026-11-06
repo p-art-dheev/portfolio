@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Menu } from "lucide-react";
 
 import { moreLinks, navLinks } from "@/lib/data";
@@ -39,6 +39,23 @@ export function Navbar({ domain }: { domain: string }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Warm every top-level page once the browser is idle, so the first click
+  // on any of them is instant. Links only prefetch while visible, and the
+  // "More" menu items are not even mounted until the menu opens.
+  useEffect(() => {
+    const warm = () => {
+      for (const link of [...navLinks, ...moreLinks])
+        router.prefetch(link.href);
+    };
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(warm, { timeout: 2000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(warm, 1200);
+    return () => clearTimeout(id);
+  }, [router]);
   const moreActive = moreLinks.some((link) => pathname.startsWith(link.href));
 
   return (

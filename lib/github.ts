@@ -1,9 +1,14 @@
-import type { Activity } from "react-activity-calendar";
+export type ContributionDay = {
+  date: string;
+  count: number;
+  /** 0 (none) to 4 (most), as GitHub shades it. */
+  level: number;
+};
 
 const CONTRIBUTIONS_API = "https://github-contributions-api.jogruber.de/v4";
 
 export type GithubContributions = {
-  contributions: Activity[];
+  contributions: ContributionDay[];
 };
 
 /**
@@ -21,9 +26,16 @@ export async function getGithubContributions(
       { next: { revalidate: 86_400 } },
     );
     if (!response.ok) return null;
-    const data = (await response.json()) as { contributions?: Activity[] };
+    const data = (await response.json()) as {
+      contributions?: ContributionDay[];
+    };
+    // Keep only what the calendar draws, so nothing extra reaches the page.
     const contributions = Array.isArray(data.contributions)
-      ? data.contributions
+      ? data.contributions.map(({ date, count, level }) => ({
+          date,
+          count,
+          level: Math.min(4, Math.max(0, Math.round(level) || 0)),
+        }))
       : [];
     if (contributions.length === 0) return null;
     return { contributions };

@@ -144,14 +144,63 @@
   }
 }
 
-/* GitHub calendar: tiles keep a fixed size at every viewport width. When a
-   year of weeks is wider than the column, the grid scrolls sideways (anchored
-   to the latest week in GitHubActivitySection) and fades at the clipped edge. */
-.heatmap .react-activity-calendar__scroll-container {
-  /* Room for the hover pop so edge tiles aren't clipped by the scroller. */
-  max-width: none !important;
+/* GitHub calendar (GithubHeatmap + HeatmapFrame). Tiles grow so a year of
+   weeks spans the full content width, using container query units, so no
+   JavaScript measures anything. Below 10px tiles (phones) they stop
+   shrinking and the grid scrolls sideways, opening on the latest weeks and
+   fading at the clipped edge. */
+.heatmap {
+  --label: 2rem;
+  --gap: 3px;
+  --months: 20px;
+  --l0: #e3dbca;
+  --l1: #9be9a8;
+  --l2: #40c463;
+  --l3: #30a14e;
+  --l4: #216e39;
+  --tile: max(
+    10px,
+    calc(
+      (100cqw - var(--label) + var(--gap)) / var(--weeks) - var(--gap) - 0.01px
+    )
+  );
+  container-type: inline-size;
+  position: relative;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.dark .heatmap {
+  --l0: #2c2823;
+  --l1: #0e4429;
+  --l2: #006d32;
+  --l3: #26a641;
+  --l4: #39d353;
+}
+
+.heatmap-days {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.heatmap-days span {
+  position: absolute;
+  left: 0;
+  top: calc(
+    var(--months) + var(--row) * (var(--tile) + var(--gap)) + var(--tile) / 2
+  );
+  transform: translateY(-50%);
+}
+
+.heatmap-scroll {
+  /* Padding gives the hover pop room so edge tiles aren't clipped. */
   padding: 2px 4px 4px 2px;
-  margin: -2px -4px -4px -2px;
+  margin: -2px -4px -4px calc(var(--label) - 2px);
+  overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
   overscroll-behavior-x: contain;
@@ -166,38 +215,96 @@
   );
 }
 
-.heatmap:not([data-at-start]) .react-activity-calendar__scroll-container {
+.heatmap:not([data-at-start]) .heatmap-scroll {
   --fade-start: 28px;
 }
 
-.heatmap:not([data-at-end]) .react-activity-calendar__scroll-container {
+.heatmap:not([data-at-end]) .heatmap-scroll {
   --fade-end: 28px;
 }
 
-.heatmap .react-activity-calendar__footer {
-  font-size: 0.75rem;
+.heatmap-months,
+.heatmap-grid {
+  display: grid;
+  width: max-content;
+  column-gap: var(--gap);
+}
+
+.heatmap-months {
+  grid-template-columns: repeat(var(--weeks), var(--tile));
+  height: var(--months);
+  overflow: hidden;
   color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.heatmap-grid {
+  grid-template-rows: repeat(7, var(--tile));
+  grid-auto-columns: var(--tile);
+  grid-auto-flow: column;
+  row-gap: var(--gap);
+}
+
+.heatmap i {
+  border-radius: 2px;
+  background-color: var(--l0);
+}
+
+.heatmap i[data-l="1"] {
+  background-color: var(--l1);
+}
+.heatmap i[data-l="2"] {
+  background-color: var(--l2);
+}
+.heatmap i[data-l="3"] {
+  background-color: var(--l3);
+}
+.heatmap i[data-l="4"] {
+  background-color: var(--l4);
 }
 
 /* Interactive pop on each day tile when hovered. */
-.heatmap svg.react-activity-calendar__calendar rect {
-  transform-box: fill-box;
-  transform-origin: center;
+.heatmap-grid i {
   transition:
     transform 0.13s cubic-bezier(0.22, 1, 0.36, 1),
-    stroke 0.13s ease;
+    box-shadow 0.13s ease;
 }
 
 @media (hover: hover) {
-  .heatmap svg.react-activity-calendar__calendar rect:hover {
+  .heatmap-grid i:hover {
     transform: scale(1.35);
-    stroke: var(--foreground);
-    stroke-width: 0.5px;
+    box-shadow: 0 0 0 0.5px var(--foreground);
   }
 }
 
-.heatmap svg.react-activity-calendar__calendar text {
-  fill: var(--muted-foreground);
+.heatmap-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  margin-left: var(--label);
+  color: var(--muted-foreground);
+}
+
+.heatmap-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.heatmap-legend i {
+  width: 10px;
+  height: 10px;
+}
+
+.heatmap-legend i:first-child {
+  margin-left: 0.25rem;
+}
+
+.heatmap-legend i:last-child {
+  margin-right: 0.25rem;
 }
 
 /* Contribution tooltip: one shared bubble for the whole calendar (see

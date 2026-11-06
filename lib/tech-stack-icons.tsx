@@ -18,8 +18,8 @@ import {
   SiSupabase,
   SiTailwindcss,
   SiTypescript,
-} from "react-icons/si";
-import type { IconType } from "react-icons";
+  type BrandIcon,
+} from "@/components/brand-icons";
 
 export type TechIconKey =
   | "typescript"
@@ -43,7 +43,7 @@ export type TechIconKey =
   | "supabase";
 
 type TechIconConfig = {
-  Icon: IconType;
+  Icon: BrandIcon;
   color: string;
   adaptive?: boolean;
 };

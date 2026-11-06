@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, FileText } from "lucide-react";
 
 import type { SiteContent } from "@/lib/content-types";
-import { AvatarSwitcher } from "@/components/AvatarSwitcher";
+import { Avatar } from "@/components/Avatar";
 import { Reveal } from "@/components/Reveal";
 import { TimeStatus } from "@/components/TimeStatus";
 import { SITE_NAME } from "@/lib/seo";
@@ -15,12 +15,16 @@ export function Hero({ site }: { site: SiteContent }) {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-10">
             <div className="flex w-full items-center justify-between gap-4 sm:contents">
-              <AvatarSwitcher avatars={site.avatars} name={site.name} />
+              <Avatar name={site.name} />
               <TimeStatus className="sm:hidden" />
             </div>
             <div className="space-y-2">
-              <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-                Hi, I&apos;m {SITE_NAME}
+              {/* Sized so the full name always stays on one line beside the
+                  avatar and status; on narrower screens only "Hi, I'm" may
+                  sit on the line above it. */}
+              <h1 className="text-[2rem] leading-tight font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-[2.75rem]">
+                Hi, I&apos;m{" "}
+                <span className="whitespace-nowrap">{SITE_NAME}</span>
               </h1>
               <p className="text-muted-foreground text-lg">{site.role}</p>
             </div>

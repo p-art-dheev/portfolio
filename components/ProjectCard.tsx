@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import type { Project, ProjectStatus } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -134,20 +134,6 @@ function ProjectLinks({
           </a>
         </Button>
       ) : null}
-      <Button
-        asChild
-        variant="outline"
-        size="sm"
-        className="group/case h-9 px-3.5"
-      >
-        <Link
-          href={`/projects/${project.slug}`}
-          aria-label={`Read the ${project.title} case study`}
-        >
-          Case study
-          <ArrowRight className="size-3.5 transition-transform group-hover/case:translate-x-0.5" />
-        </Link>
-      </Button>
       {liveUrl ? (
         <Button asChild size="sm" className="group/live ml-auto h-9 px-3.5">
           <a

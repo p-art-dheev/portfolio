@@ -5,6 +5,9 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   : undefined;
 
 const nextConfig: NextConfig = {
+  // Lets a verification build go to its own folder (NEXT_DIST_DIR=.next-verify)
+  // without clobbering the .next folder a running dev server is using.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: supabaseHost
@@ -43,7 +46,7 @@ const nextConfig: NextConfig = {
   experimental: {
     // Media uploads go through server actions (10 MB cap enforced there).
     serverActions: { bodySizeLimit: "12mb" },
-    optimizePackageImports: ["lucide-react", "radix-ui", "react-icons"],
+    optimizePackageImports: ["lucide-react", "radix-ui"],
   },
 };
 
