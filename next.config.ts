@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
   // Lets a verification build go to its own folder (NEXT_DIST_DIR=.next-verify)
   // without clobbering the .next folder a running dev server is using.
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  // Link-preview images (lib/og.tsx) read their fonts from assets/og at
+  // runtime when they regenerate; make sure the files ship with them.
+  outputFileTracingIncludes: {
+    "/**": ["./assets/og/**/*"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: supabaseHost

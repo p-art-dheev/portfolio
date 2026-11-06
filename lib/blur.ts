@@ -48,7 +48,8 @@ function download(url: string): Promise<Buffer> {
   });
 }
 
-async function source(src: string): Promise<Buffer> {
+/** Raw bytes of a site image (public/ path) or an https URL. */
+export async function loadImageSource(src: string): Promise<Buffer> {
   if (src.startsWith("/") && !src.startsWith("//")) {
     // Site files: read from public/ during the build. Serverless functions
     // that revalidate later don't ship public/, so fall back to the CDN copy.
@@ -66,7 +67,7 @@ async function source(src: string): Promise<Buffer> {
 async function render(src: string): Promise<string | undefined> {
   try {
     const { default: sharp } = await import("sharp");
-    const input = await source(src);
+    const input = await loadImageSource(src);
     const preview = await sharp(input, { failOn: "none" })
       .resize(16, 16, { fit: "inside" })
       .webp({ quality: 50 })

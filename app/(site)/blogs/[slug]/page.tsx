@@ -45,15 +45,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.publishedAt ?? undefined,
       modifiedTime: post.updatedAt ?? undefined,
       tags: post.tags,
-      images: post.coverUrl
-        ? [{ url: post.coverUrl, alt: post.coverAlt || post.title }]
-        : undefined,
+      // The preview image comes from ./opengraph-image.tsx.
     },
     twitter: {
-      card: post.coverUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: post.title,
       description,
-      images: post.coverUrl ? [post.coverUrl] : undefined,
     },
   };
 }

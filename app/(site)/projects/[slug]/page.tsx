@@ -22,9 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await getPublishedProject(slug);
   if (!project) return { title: "Project not found" };
   const url = `/projects/${project.slug}`;
-  const images = project.banner
-    ? [{ url: project.banner, alt: `${project.title} banner` }]
-    : undefined;
+  // The preview image comes from ./opengraph-image.tsx (banner on a mat).
   return {
     title: project.title,
     description: project.description,
@@ -36,13 +34,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: project.title,
       description: project.description,
       url,
-      images,
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
       description: project.description,
-      images: project.banner ? [project.banner] : undefined,
     },
   };
 }
