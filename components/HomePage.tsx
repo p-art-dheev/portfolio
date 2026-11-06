@@ -24,19 +24,30 @@ export async function HomePage() {
     githubUsernameFromUrl(site.socials.github),
   );
 
+  // Sections are numbered in order (01 · About, 02 · Education, ...),
+  // skipping any that have nothing to show.
+  let section = 0;
+  const next = () => ++section;
+
   return (
     <Container
       as="div"
-      className="flex flex-col gap-10 py-8 sm:gap-12 sm:py-12"
+      className="flex flex-col gap-14 py-8 sm:gap-20 sm:py-14"
     >
       <Hero site={site} />
-      <AboutSection site={site} />
-      <EducationSection site={site} />
-      <TechStackGrid items={site.techStack} />
-      <GithubHeatmap githubUrl={site.socials.github} data={github} />
-      <FeaturedProjects projects={projects} />
-      <ConnectSection site={site} />
-      <ExploreSection />
+      <AboutSection site={site} index={next()} />
+      <EducationSection site={site} index={next()} />
+      <TechStackGrid items={site.techStack} index={next()} />
+      <GithubHeatmap
+        githubUrl={site.socials.github}
+        data={github}
+        index={next()}
+      />
+      {projects.length > 0 ? (
+        <FeaturedProjects projects={projects} index={next()} />
+      ) : null}
+      <ConnectSection site={site} index={next()} />
+      <ExploreSection index={next()} />
     </Container>
   );
 }

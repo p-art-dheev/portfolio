@@ -15,7 +15,9 @@ export function ArtworksPage({ artworks }: { artworks: ArtworkItem[] }) {
 
   return (
     <Container className="py-8 sm:py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">Artworks</h1>
+      <h1 className="font-display text-[2.6rem] leading-tight font-normal tracking-[-0.01em]">
+        Artworks
+      </h1>
       <p className="text-muted-foreground mt-3 mb-8 max-w-xl">
         Realism drawings and digital art. Click any piece to view full size.
       </p>

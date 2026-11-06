@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 import { HeatmapFrame } from "@/components/HeatmapFrame";
 import { Github } from "@/components/icons";
+import { SectionHeading } from "@/components/SectionHeading";
 import type { ContributionDay, GithubContributions } from "@/lib/github";
 import { githubUsernameFromUrl } from "@/lib/sanitize";
 
@@ -60,25 +61,32 @@ function monthLabels(days: ContributionDay[], offset: number, weeks: number) {
 export function GithubHeatmap({
   githubUrl,
   data,
+  index,
 }: {
   githubUrl: string;
   data: GithubContributions | null;
+  index: number;
 }) {
   const githubUsername = githubUsernameFromUrl(githubUrl);
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-lg font-medium tracking-tight">GitHub Activity</h2>
-        <a
-          href={githubUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-        >
-          <Github className="size-4" aria-hidden />@{githubUsername}
-        </a>
-      </div>
+    <section className="space-y-5">
+      <SectionHeading
+        index={index}
+        eyebrow="Activity"
+        title="A year on GitHub"
+        action={
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
+          >
+            <Github className="size-4" aria-hidden />
+            <span className="link-draw">@{githubUsername}</span>
+          </a>
+        }
+      />
 
       {data ? (
         <Calendar days={data.contributions} />

@@ -5,12 +5,13 @@ import type { SiteContent } from "@/lib/content-types";
 export function EducationCard({ site }: { site: SiteContent }) {
   return (
     <div className="border-border w-fit max-w-lg space-y-2.5 border-l-2 pl-4">
-      <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium tracking-wide uppercase">
-        <GraduationCap className="size-4 shrink-0" aria-hidden />
-        <span>Education</span>
-      </div>
-
-      <p className="text-base leading-snug font-medium">{site.college}</p>
+      <p className="flex items-center gap-2 text-base leading-snug font-medium">
+        <GraduationCap
+          className="text-muted-foreground size-4 shrink-0"
+          aria-hidden
+        />
+        {site.college}
+      </p>
 
       <p className="text-muted-foreground text-sm leading-relaxed">
         {site.branch}

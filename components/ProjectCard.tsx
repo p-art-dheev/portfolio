@@ -68,7 +68,7 @@ function ProjectBanner({ project }: { project: Project }) {
   if (!project.banner || hasError) {
     return (
       <div
-        className="bg-muted/40 text-muted-foreground flex aspect-video w-full items-center justify-center rounded-xl text-xs"
+        className="project-print bg-card text-muted-foreground flex aspect-video w-full items-center justify-center text-xs"
         aria-hidden
       >
         Banner coming soon
@@ -85,7 +85,7 @@ function ProjectBanner({ project }: { project: Project }) {
       quality={75}
       sizes="(min-width: 640px) 40vw, 90vw"
       onError={() => setHasError(true)}
-      className="aspect-video w-full rounded-xl object-cover"
+      className="project-print aspect-video w-full object-cover"
     />
   );
 }
@@ -151,13 +151,13 @@ function ProjectLinks({
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <div className="h-full transition-transform hover:-translate-y-1">
-      <Card className="h-full transition-shadow hover:shadow-md">
+    <div className="h-full transition-transform duration-300 ease-out hover:-translate-y-1">
+      <Card className="h-full transition-shadow duration-300 hover:shadow-lg hover:shadow-black/5">
         <Link
           href={`/projects/${project.slug}`}
           tabIndex={-1}
           aria-hidden
-          className="px-(--card-spacing)"
+          className="project-mat mx-(--card-spacing)"
         >
           <ProjectBanner project={project} />
         </Link>

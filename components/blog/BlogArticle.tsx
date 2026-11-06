@@ -94,7 +94,7 @@ export function BlogArticle({
           </span>
         </div>
 
-        <h1 className="text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-4xl">
+        <h1 className="font-display text-[2.4rem] leading-[1.1] font-normal tracking-[-0.01em] text-balance sm:text-5xl">
           {post.title || "Untitled post"}
         </h1>
         {post.excerpt ? (

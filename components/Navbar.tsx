@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Menu } from "lucide-react";
@@ -58,6 +58,38 @@ export function Navbar({ domain }: { domain: string }) {
   }, [router]);
   const moreActive = moreLinks.some((link) => pathname.startsWith(link.href));
 
+  // An ink underline that slides to the active item. It is measured from
+  // the DOM (the item marked data-active) and only animates after its first
+  // placement, so it never sweeps in from the left on page load.
+  const navRef = useRef<HTMLElement>(null);
+  const [indicator, setIndicator] = useState<{
+    left: number;
+    width: number;
+    animate: boolean;
+  } | null>(null);
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const place = () => {
+      const active = nav.querySelector<HTMLElement>("[data-active]");
+      if (!active) {
+        setIndicator(null);
+        return;
+      }
+      // Underline the label, not the item's padding.
+      const inset = 10;
+      setIndicator((current) => ({
+        left: active.offsetLeft + inset,
+        width: active.offsetWidth - inset * 2,
+        animate: current !== null,
+      }));
+    };
+    place();
+    const resizes = new ResizeObserver(place);
+    resizes.observe(nav);
+    return () => resizes.disconnect();
+  }, [pathname, mounted]);
+
   return (
     <header className="border-border/80 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-md">
       <Container className="flex h-14 items-center justify-between gap-4">
@@ -65,7 +97,22 @@ export function Navbar({ domain }: { domain: string }) {
           {domain}
         </Link>
 
-        <nav className="hidden items-center gap-1 sm:flex" aria-label="Primary">
+        <nav
+          ref={navRef}
+          className="relative hidden items-center gap-1 sm:flex"
+          aria-label="Primary"
+        >
+          {indicator ? (
+            <span
+              aria-hidden
+              className={cn(
+                "bg-link pointer-events-none absolute -bottom-3 h-0.5 rounded-full",
+                indicator.animate &&
+                  "transition-[left,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              )}
+              style={{ left: indicator.left, width: indicator.width }}
+            />
+          ) : null}
           {navLinks.map((link) => {
             const isActive =
               link.href === "/"
@@ -77,6 +124,8 @@ export function Navbar({ domain }: { domain: string }) {
                 key={link.href}
                 href={link.href}
                 className={navLinkClass(isActive)}
+                data-active={isActive || undefined}
+                aria-current={isActive ? "page" : undefined}
               >
                 {link.label}
               </Link>
@@ -88,6 +137,7 @@ export function Navbar({ domain }: { domain: string }) {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
+                  data-active={moreActive || undefined}
                   className={cn(
                     "text-muted-foreground cursor-pointer",
                     moreActive && "text-foreground font-medium",
@@ -108,6 +158,7 @@ export function Navbar({ domain }: { domain: string }) {
           ) : (
             <Button
               variant="ghost"
+              data-active={moreActive || undefined}
               className={cn(
                 "text-muted-foreground cursor-pointer",
                 moreActive && "text-foreground font-medium",

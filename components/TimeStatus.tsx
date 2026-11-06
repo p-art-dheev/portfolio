@@ -55,12 +55,12 @@ export function TimeStatus({ className }: TimeStatusProps) {
       >
         <span className="relative flex size-2.5">
           {available ? (
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
+            <span className="bg-link absolute inline-flex size-full animate-ping rounded-full opacity-50 motion-reduce:animate-none" />
           ) : null}
           <span
             className={cn(
               "relative inline-flex size-2.5 rounded-full",
-              available ? "bg-emerald-500" : "bg-zinc-400",
+              available ? "bg-link" : "bg-muted-foreground/50",
             )}
           />
         </span>

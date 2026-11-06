@@ -4,10 +4,17 @@ import type { SiteContent } from "@/lib/content-types";
 import { Github, Linkedin } from "@/components/icons";
 import { EmailLink } from "@/components/EmailLink";
 import { Reveal } from "@/components/Reveal";
+import { SectionHeading } from "@/components/SectionHeading";
 import { encodeEmail } from "@/lib/email";
 import { Button } from "@/components/ui/button";
 
-export function ConnectSection({ site }: { site: SiteContent }) {
+export function ConnectSection({
+  site,
+  index,
+}: {
+  site: SiteContent;
+  index: number;
+}) {
   const socials = [
     { href: site.socials.linkedin, label: "LinkedIn", icon: Linkedin },
     { href: site.socials.github, label: "GitHub", icon: Github },
@@ -16,8 +23,8 @@ export function ConnectSection({ site }: { site: SiteContent }) {
 
   return (
     <Reveal delay={0.05}>
-      <section id="contact" className="scroll-mt-24 space-y-3">
-        <h2 className="text-lg font-medium tracking-tight">Connect</h2>
+      <section id="contact" className="scroll-mt-24 space-y-5">
+        <SectionHeading index={index} eyebrow="Contact" title="Let’s connect" />
         <div className="flex flex-wrap items-center gap-2">
           {socials.map(({ href, label, icon: Icon }) => (
             <Button key={label} variant="outline" className={linkClass} asChild>

@@ -13,7 +13,7 @@ export function NotFoundContent() {
   return (
     <Container className="py-24 text-center">
       <p className="text-muted-foreground text-sm">404</p>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight">
+      <h1 className="font-display mt-2 text-4xl font-normal tracking-[-0.01em]">
         This page doesn&apos;t exist
       </h1>
       <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm">

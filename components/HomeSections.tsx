@@ -4,12 +4,23 @@ import { ArrowUpRight } from "lucide-react";
 import type { SiteContent } from "@/lib/content-types";
 import { Reveal } from "@/components/Reveal";
 import { EducationCard } from "@/components/EducationCard";
+import { SectionHeading } from "@/components/SectionHeading";
 
-export function EducationSection({ site }: { site: SiteContent }) {
+export function EducationSection({
+  site,
+  index,
+}: {
+  site: SiteContent;
+  index: number;
+}) {
   return (
     <Reveal>
-      <section className="space-y-3">
-        <h2 className="sr-only">Education</h2>
+      <section className="space-y-5">
+        <SectionHeading
+          index={index}
+          eyebrow="Education"
+          title="Where I’m learning"
+        />
         <EducationCard site={site} />
       </section>
     </Reveal>
@@ -43,11 +54,21 @@ function bioParagraphs(bio: string) {
   ];
 }
 
-export function AboutSection({ site }: { site: SiteContent }) {
+export function AboutSection({
+  site,
+  index,
+}: {
+  site: SiteContent;
+  index: number;
+}) {
   return (
     <Reveal delay={0.05}>
-      <section className="space-y-3">
-        <h2 className="text-lg font-medium tracking-tight">About</h2>
+      <section className="space-y-4">
+        <SectionHeading
+          index={index}
+          eyebrow="About"
+          title="A little about me"
+        />
         {bioParagraphs(site.bio).map((paragraph, index) => (
           <p key={index} className="text-muted-foreground w-full leading-7">
             {paragraph}
@@ -76,25 +97,29 @@ const exploreLinks = [
   },
 ] as const;
 
-export function ExploreSection() {
+export function ExploreSection({ index }: { index: number }) {
   return (
     <Reveal>
-      <section className="space-y-4">
-        <h2 className="text-lg font-medium tracking-tight">Explore</h2>
+      <section className="space-y-5">
+        <SectionHeading
+          index={index}
+          eyebrow="Explore"
+          title="Beyond the code"
+        />
         <div className="grid gap-3 sm:grid-cols-3">
           {exploreLinks.map(({ href, label, description }) => (
             <Link
               key={href}
               href={href}
-              className="border-border bg-card group hover:bg-muted/50 flex items-center justify-between rounded-xl border px-4 py-4 transition-colors"
+              className="border-border bg-card group hover:bg-muted/50 flex items-center justify-between rounded-xl border px-4 py-4 transition-[background-color,translate,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-sm"
             >
               <div>
-                <p className="text-sm font-medium">{label}</p>
+                <p className="font-display text-xl leading-tight">{label}</p>
                 <p className="text-muted-foreground mt-0.5 text-sm">
                   {description}
                 </p>
               </div>
-              <ArrowUpRight className="text-muted-foreground size-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="text-muted-foreground group-hover:text-link size-4 shrink-0 transition-[color,translate] group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
           ))}
         </div>
