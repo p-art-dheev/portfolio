@@ -12,9 +12,10 @@ const githubTheme = {
   light: ["#e3dbca", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
 };
 
-// Fixed tile geometry: the calendar never stretches with the viewport. When
-// a year of weeks doesn't fit, it scrolls sideways instead (see globals.css).
-const HEATMAP_BLOCK_SIZE = 10;
+// Tiles grow so a year of weeks spans the full content width. Text keeps its
+// size; only the squares scale. Below the minimum (phones), tiles stay at
+// the minimum and the grid scrolls sideways instead (see globals.css).
+const HEATMAP_MIN_BLOCK_SIZE = 10;
 const HEATMAP_BLOCK_MARGIN = 3;
 const HEATMAP_FONT_SIZE = 12;
 
@@ -44,6 +45,13 @@ function tooltipText(date: string, count: number) {
   return `${label} on ${dateFormat.format(new Date(`${date}T00:00:00`))}`;
 }
 
+/** Columns the library draws: weeks start on Sunday, padded at the start. */
+function weekCount(dates: { date: string }[]) {
+  if (dates.length === 0) return 0;
+  const firstDay = new Date(`${dates[0].date}T00:00:00`).getDay();
+  return Math.ceil((firstDay + dates.length) / 7);
+}
+
 type Tip = { text: string; x: number; y: number; arrowX: number };
 
 /**
@@ -63,6 +71,8 @@ export function GithubHeatmap({
   const [hasGrid, setHasGrid] = useState(false);
   const [edges, setEdges] = useState({ start: true, end: true });
   const [tip, setTip] = useState<Tip | null>(null);
+  const [blockSize, setBlockSize] = useState(HEATMAP_MIN_BLOCK_SIZE);
+  const weeks = useMemo(() => weekCount(data?.contributions ?? []), [data]);
   const tipRef = useRef<HTMLDivElement>(null);
 
   const counts = useMemo(
@@ -119,6 +129,22 @@ export function GithubHeatmap({
     let scroller: HTMLElement | null = null;
     let userScrolled = false;
 
+    // Size tiles so the grid's width equals the space beside the day labels.
+    const fit = () => {
+      if (!weeks) return;
+      const padding = parseFloat(getComputedStyle(wrapper).paddingLeft) || 0;
+      const available = wrapper.clientWidth - padding;
+      const ideal =
+        (available + HEATMAP_BLOCK_MARGIN) / weeks - HEATMAP_BLOCK_MARGIN;
+      const next = Math.max(
+        HEATMAP_MIN_BLOCK_SIZE,
+        Math.floor(ideal * 100) / 100,
+      );
+      setBlockSize((current) =>
+        Math.abs(current - next) < 0.01 ? current : next,
+      );
+    };
+
     const updateEdges = () => {
       if (!scroller) return;
       const max = scroller.scrollWidth - scroller.clientWidth;
@@ -155,12 +181,16 @@ export function GithubHeatmap({
       updateEdges();
     };
 
+    fit();
     attach();
     // The calendar swaps its loading placeholder for real data (or an error
     // message) after mount, and the viewport can be resized at any time.
     const mutations = new MutationObserver(attach);
     mutations.observe(wrapper, { childList: true, subtree: true });
-    const resizes = new ResizeObserver(attach);
+    const resizes = new ResizeObserver(() => {
+      fit();
+      attach();
+    });
     resizes.observe(wrapper);
 
     return () => {
@@ -171,7 +201,7 @@ export function GithubHeatmap({
       scroller?.removeEventListener("wheel", onUserScroll);
       scroller?.removeEventListener("touchstart", onUserScroll);
     };
-  }, []);
+  }, [weeks]);
 
   return (
     <section className="space-y-4">
@@ -222,8 +252,8 @@ export function GithubHeatmap({
                 style={{
                   top:
                     GRID_TOP +
-                    row * (HEATMAP_BLOCK_SIZE + HEATMAP_BLOCK_MARGIN) +
-                    HEATMAP_BLOCK_SIZE / 2,
+                    row * (blockSize + HEATMAP_BLOCK_MARGIN) +
+                    blockSize / 2,
                 }}
               >
                 {label}
@@ -236,7 +266,7 @@ export function GithubHeatmap({
             data={data.contributions}
             maxLevel={4}
             labels={{ totalCount: "{{count}} contributions in the last year" }}
-            blockSize={HEATMAP_BLOCK_SIZE}
+            blockSize={blockSize}
             blockMargin={HEATMAP_BLOCK_MARGIN}
             blockRadius={2}
             fontSize={HEATMAP_FONT_SIZE}

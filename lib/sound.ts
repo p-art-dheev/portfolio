@@ -11,6 +11,8 @@
 export type SoundName = "click" | "toggle-on" | "toggle-off";
 
 const MASTER_VOLUME = 1;
+// The theme swoosh sits a little under the clicks.
+const SWOOSH_VOLUME = 0.7;
 
 let ctx: AudioContext | null = null;
 let out: GainNode | null = null;
@@ -119,7 +121,7 @@ function render(ac: AudioContext, name: SoundName) {
         freq: 350,
         sweepTo: 2200,
         q: 1.2,
-        peak: 0.35,
+        peak: 0.35 * SWOOSH_VOLUME,
         attack: 0.09,
         release: 0.28,
       });
