@@ -1,18 +1,20 @@
 // Soft UI sounds, synthesized with the Web Audio API. Nothing is downloaded.
 //
-// The palette is deliberately low and warm: rounded sine tones with a gentle
-// attack, run through a low-pass filter so there is no bright "beep" edge,
-// and a faint room tail on the chimes. Sounds are always on; there is no
-// mute toggle. Browsers only allow audio after the visitor's first click or
-// key press, so the AudioContext is created (and unlocked) at that moment.
+// - click: "felt key", a deep, muted keyboard key (a low sine thump plus a
+//   short burst of low-passed noise for texture).
+// - toggle: "soft swoosh", a breath of band-passed noise sweeping upward.
+//
+// Sounds are always on; there is no mute toggle. Browsers only allow audio
+// after the visitor's first click or key press, so the AudioContext is
+// created (and unlocked) at that moment.
 
 export type SoundName = "click" | "toggle-on" | "toggle-off";
 
-const MASTER_VOLUME = 0.55;
+const MASTER_VOLUME = 1;
 
 let ctx: AudioContext | null = null;
-let dry: AudioNode | null = null;
-let wet: AudioNode | null = null;
+let out: GainNode | null = null;
+let noise: AudioBuffer | null = null;
 
 function getContext(): AudioContext | null {
   if (typeof window === "undefined") return null;
@@ -25,113 +27,103 @@ function getContext(): AudioContext | null {
   if (!Ctor) return null;
   ctx = new Ctor();
 
-  // master -> warm low-pass -> speakers. Everything goes through the filter,
-  // which rounds off any harsh upper partials.
-  const master = ctx.createGain();
-  master.gain.value = MASTER_VOLUME;
-  const warmth = ctx.createBiquadFilter();
-  warmth.type = "lowpass";
-  warmth.frequency.value = 2600;
-  warmth.Q.value = 0.5;
-  master.connect(warmth).connect(ctx.destination);
-  dry = master;
+  out = ctx.createGain();
+  out.gain.value = MASTER_VOLUME;
+  const warm = ctx.createBiquadFilter();
+  warm.type = "lowpass";
+  warm.frequency.value = 6000;
+  out.connect(warm).connect(ctx.destination);
 
-  // A tiny, darkened feedback delay stands in for a small room. Only the
-  // chimes send to it; clicks stay dry and close.
-  const send = ctx.createGain();
-  send.gain.value = 0.22;
-  const delay = ctx.createDelay(1);
-  delay.delayTime.value = 0.13;
-  const feedback = ctx.createGain();
-  feedback.gain.value = 0.28;
-  const dampen = ctx.createBiquadFilter();
-  dampen.type = "lowpass";
-  dampen.frequency.value = 1400;
-  send.connect(delay);
-  delay.connect(dampen).connect(feedback).connect(delay);
-  dampen.connect(master);
-  wet = send;
+  // One second of white noise, reused (from a random offset) by every sound.
+  noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+  const data = noise.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
 
   return ctx;
 }
 
-type Tone = {
-  freq: number;
-  /** Optional pitch glide target, reached over the first 60% of the tone. */
-  to?: number;
-  duration: number;
-  gain: number;
-  attack?: number;
-  delay?: number;
-  type?: OscillatorType;
-  reverb?: boolean;
-};
-
-function tone(ac: AudioContext, t: Tone) {
-  const start = ac.currentTime + (t.delay ?? 0);
-  const attack = t.attack ?? 0.004;
-  const end = start + t.duration;
-
-  const osc = ac.createOscillator();
-  osc.type = t.type ?? "sine";
-  osc.frequency.setValueAtTime(t.freq, start);
-  if (t.to) {
-    osc.frequency.exponentialRampToValueAtTime(t.to, start + t.duration * 0.6);
-  }
-
-  // Soft attack, long exponential release: no pops, nothing abrupt.
-  const env = ac.createGain();
-  env.gain.setValueAtTime(0.0001, start);
-  env.gain.exponentialRampToValueAtTime(t.gain, start + attack);
-  env.gain.exponentialRampToValueAtTime(0.0001, end);
-
-  osc.connect(env);
-  env.connect(dry!);
-  if (t.reverb) env.connect(wet!);
-  osc.start(start);
-  osc.stop(end + 0.05);
+function envelope(
+  ac: AudioContext,
+  start: number,
+  peak: number,
+  attack: number,
+  release: number,
+) {
+  const g = ac.createGain();
+  g.gain.setValueAtTime(0.0001, start);
+  g.gain.exponentialRampToValueAtTime(peak, start + attack);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + attack + release);
+  return g;
 }
 
-// A little pitch variance keeps repeated clicks from sounding mechanical.
-function vary(freq: number, cents = 30) {
-  return freq * 2 ** (((Math.random() * 2 - 1) * cents) / 1200);
+function noiseBurst(
+  ac: AudioContext,
+  o: {
+    type: BiquadFilterType;
+    freq: number;
+    sweepTo?: number;
+    q?: number;
+    peak: number;
+    attack?: number;
+    release: number;
+  },
+) {
+  const t = ac.currentTime;
+  const attack = o.attack ?? 0.002;
+  const src = ac.createBufferSource();
+  src.buffer = noise;
+  src.playbackRate.value = 0.9 + Math.random() * 0.2;
+  const filter = ac.createBiquadFilter();
+  filter.type = o.type;
+  filter.frequency.setValueAtTime(o.freq, t);
+  if (o.sweepTo) {
+    filter.frequency.exponentialRampToValueAtTime(o.sweepTo, t + o.release);
+  }
+  filter.Q.value = o.q ?? 0.7;
+  src
+    .connect(filter)
+    .connect(envelope(ac, t, o.peak, attack, o.release))
+    .connect(out!);
+  src.start(t, Math.random() * 0.5);
+  src.stop(t + attack + o.release + 0.05);
+}
+
+function thump(
+  ac: AudioContext,
+  o: { freq: number; to: number; peak: number; release: number },
+) {
+  const t = ac.currentTime;
+  const osc = ac.createOscillator();
+  osc.frequency.setValueAtTime(o.freq, t);
+  osc.frequency.exponentialRampToValueAtTime(o.to, t + o.release);
+  osc.connect(envelope(ac, t, o.peak, 0.003, o.release)).connect(out!);
+  osc.start(t);
+  osc.stop(t + o.release + 0.06);
 }
 
 function render(ac: AudioContext, name: SoundName) {
   switch (name) {
-    case "click": {
-      // A muted wooden "tock": a low body that dips slightly in pitch, plus a
-      // quieter overtone that dies away first.
-      const f = vary(440);
-      tone(ac, { freq: f, to: f * 0.82, duration: 0.11, gain: 0.09 });
-      tone(ac, { freq: f * 2.01, duration: 0.045, gain: 0.018 });
-      break;
-    }
-    case "toggle-on":
-    case "toggle-off": {
-      // Two soft marimba-like notes a fourth apart (E5 and A5), rising for
-      // light and falling for dark.
-      const notes = name === "toggle-on" ? [659.25, 880] : [880, 659.25];
-      notes.forEach((freq, i) => {
-        const delay = i * 0.085;
-        tone(ac, {
-          freq,
-          duration: 0.42,
-          gain: 0.055,
-          attack: 0.008,
-          delay,
-          reverb: true,
-        });
-        tone(ac, {
-          freq: freq * 3.98,
-          duration: 0.08,
-          gain: 0.006,
-          attack: 0.003,
-          delay,
-        });
+    case "click":
+      thump(ac, { freq: 150, to: 90, peak: 0.25, release: 0.05 });
+      noiseBurst(ac, {
+        type: "lowpass",
+        freq: 900,
+        peak: 0.22,
+        release: 0.025,
       });
       break;
-    }
+    case "toggle-on":
+    case "toggle-off":
+      noiseBurst(ac, {
+        type: "bandpass",
+        freq: 350,
+        sweepTo: 2200,
+        q: 1.2,
+        peak: 0.35,
+        attack: 0.09,
+        release: 0.28,
+      });
+      break;
   }
 }
 
