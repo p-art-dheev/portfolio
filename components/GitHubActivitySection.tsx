@@ -8,8 +8,8 @@ import type { GithubContributions } from "@/lib/github";
 import { githubUsernameFromUrl } from "@/lib/sanitize";
 
 const githubTheme = {
-  dark: ["#2a2a2a", "#0e4429", "#006d32", "#26a641", "#39d353"],
-  light: ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
+  dark: ["#2c2823", "#0e4429", "#006d32", "#26a641", "#39d353"],
+  light: ["#e3dbca", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
 };
 
 // Fixed tile geometry: the calendar never stretches with the viewport. When
