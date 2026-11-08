@@ -9,18 +9,18 @@ import { getSiteSettings } from "@/lib/queries";
 import { SITE_NAME } from "@/lib/seo";
 
 /**
- * Link previews (Open Graph / Twitter cards) in the site's own style: white
- * paper, Instrument Serif titles, an ink-blue accent, and project or post
+ * Link previews (Open Graph / Twitter cards) in the site's own style: a
+ * platinum Titanium page, Instrument Serif titles, an ink-blue accent, and project or post
  * images mounted on a paper mat like the cards on the site.
  */
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
-const INK = "#1b1b1f";
-const MUTED = "#62626b";
+const INK = "#17191c";
+const MUTED = "#5b616a";
 const LINK = "#2e5488";
-const BORDER = "#e5e5e8";
-const MAT = "#f3f3f4";
+const BORDER = "#d7dbe0";
+const MAT = "#eceef1";
 
 // The same fixed photo the site shows.
 const AVATAR = "/avatars/avatar.jpg";
@@ -122,9 +122,9 @@ export async function renderOgImage({
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#f3f4f6",
         backgroundImage:
-          "radial-gradient(circle at 0% 0%, #f4f4f6 0%, #ffffff 55%)",
+          "radial-gradient(circle at 0% 0%, #ffffff 0%, #f3f4f6 55%)",
         color: INK,
         fontFamily: "Sans",
       }}

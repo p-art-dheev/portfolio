@@ -13,7 +13,7 @@ export default function BlogsError({
 }) {
   return (
     <Container className="py-24 text-center">
-      <h1 className="font-display text-4xl font-normal tracking-[-0.01em]">
+      <h1 className="metal-text font-display text-4xl font-normal tracking-[-0.01em]">
         Couldn&apos;t load the blog
       </h1>
       <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm">

@@ -33,7 +33,7 @@ export default async function AdminArtworksPage() {
           {artworks.map((artwork) => (
             <li
               key={artwork.id}
-              className="border-border flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="metal-edge flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="space-y-1.5">
                 <p className="font-medium tracking-tight">{artwork.title}</p>

@@ -153,7 +153,7 @@ export default async function AdminBlogsPage({
               {visible.map((post) => (
                 <li
                   key={post.id}
-                  className="border-border flex flex-col gap-4 rounded-2xl border p-3 sm:flex-row sm:items-center sm:p-4"
+                  className="metal-edge flex flex-col gap-4 rounded-2xl p-3 sm:flex-row sm:items-center sm:p-4"
                 >
                   <Link
                     href={`/admin/blogs/${post.id}`}

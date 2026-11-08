@@ -7,7 +7,7 @@ export default function BlogPostNotFound() {
   return (
     <Container className="py-24 text-center">
       <p className="text-muted-foreground text-sm">404</p>
-      <h1 className="font-display mt-2 text-4xl font-normal tracking-[-0.01em]">
+      <h1 className="metal-text font-display mt-2 text-4xl font-normal tracking-[-0.01em]">
         This post doesn&apos;t exist
       </h1>
       <p className="text-muted-foreground mx-auto mt-2 max-w-sm text-sm">

@@ -5,7 +5,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 export function ProjectsPage({ projects }: { projects: Project[] }) {
   return (
     <Container className="py-16">
-      <h1 className="font-display text-[2.6rem] leading-tight font-normal tracking-[-0.01em]">
+      <h1 className="metal-text font-display text-[2.6rem] leading-tight font-normal tracking-[-0.01em]">
         Projects
       </h1>
       <p className="text-muted-foreground mt-3 max-w-xl">

@@ -111,7 +111,7 @@ export function ExploreSection({ index }: { index: number }) {
             <Link
               key={href}
               href={href}
-              className="border-border bg-card group hover:bg-muted/50 flex items-center justify-between rounded-xl border px-4 py-4 transition-[background-color,translate,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-sm"
+              className="metal-edge group flex items-center justify-between rounded-xl border px-4 py-4 transition-[background-color,translate,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-sm hover:[--card:var(--muted)]"
             >
               <div>
                 <p className="font-display text-xl leading-tight">{label}</p>

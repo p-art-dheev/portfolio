@@ -10,7 +10,7 @@ type PlaceholderPageProps = {
 export function PlaceholderPage({ title, description }: PlaceholderPageProps) {
   return (
     <Container className="py-16">
-      <h1 className="font-display text-[2.6rem] leading-tight font-normal tracking-[-0.01em]">
+      <h1 className="metal-text font-display text-[2.6rem] leading-tight font-normal tracking-[-0.01em]">
         {title}
       </h1>
       <p className="text-muted-foreground mt-3 max-w-xl">{description}</p>

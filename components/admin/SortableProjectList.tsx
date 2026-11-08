@@ -183,7 +183,7 @@ function SortableRow({
         transition,
       }}
       className={cn(
-        "border-border bg-background relative flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between",
+        "metal-edge relative flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between",
         isDragging && "z-10 shadow-lg ring-2 ring-sky-500/40",
       )}
     >

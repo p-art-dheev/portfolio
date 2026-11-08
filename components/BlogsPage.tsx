@@ -13,7 +13,7 @@ export function BlogsPage({
   return (
     <Container className="py-12 sm:py-16">
       <header>
-        <h1 className="font-display text-[2.6rem] leading-tight font-normal tracking-[-0.01em]">
+        <h1 className="metal-text font-display text-[2.6rem] leading-tight font-normal tracking-[-0.01em]">
           Blog
         </h1>
         <p className="text-muted-foreground mt-3 max-w-xl">

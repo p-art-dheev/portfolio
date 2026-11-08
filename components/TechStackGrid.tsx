@@ -29,7 +29,7 @@ export function TechStackGrid({
             return (
               <li
                 key={item.label}
-                className="tech-pill border-border bg-card inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-transform hover:-translate-y-0.5"
+                className="tech-pill metal-edge inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-transform hover:-translate-y-0.5"
                 style={
                   {
                     "--brand": adaptive ? "var(--foreground)" : color,
