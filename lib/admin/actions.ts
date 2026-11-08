@@ -694,6 +694,7 @@ export async function saveSiteSettings(formData: FormData) {
       linkedin: str(formData, "linkedin"),
       github: str(formData, "github"),
       email: str(formData, "email"),
+      discord: str(formData, "discord"),
     },
     tech_stack: techStack,
   };

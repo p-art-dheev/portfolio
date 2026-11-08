@@ -104,6 +104,14 @@ export function SettingsForm({ site }: { site: SiteContent }) {
         />
       </div>
       <div className="space-y-2">
+        <Label htmlFor="discord">Discord username</Label>
+        <Input
+          id="discord"
+          name="discord"
+          defaultValue={site.socials.discord}
+        />
+      </div>
+      <div className="space-y-2">
         <Label htmlFor="avatars">Avatar URLs (one per line)</Label>
         <Textarea
           id="avatars"

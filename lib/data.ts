@@ -19,6 +19,7 @@ export const site = {
     linkedin: "https://linkedin.com/in/pardheev-vatturu/",
     github: "https://github.com/p-art-dheev",
     email: "pardheev.vatturu1234@gmail.com",
+    discord: "pardheev_draws",
   },
 } as const;
 
