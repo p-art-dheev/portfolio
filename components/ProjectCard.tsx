@@ -154,12 +154,12 @@ function ProjectLinks({
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <div className="h-full transition-transform duration-300 ease-out hover:-translate-y-1">
-      <Card className="h-full transition-shadow duration-300 hover:shadow-lg hover:shadow-black/5">
+      <Card className="h-full rounded-[1.5rem] pt-2 transition-shadow duration-300 hover:shadow-lg hover:shadow-black/5">
         <Link
           href={`/projects/${project.slug}`}
           tabIndex={-1}
           aria-hidden
-          className="project-mat mx-(--card-spacing)"
+          className="project-mat mx-2"
         >
           <ProjectBanner project={project} />
         </Link>
