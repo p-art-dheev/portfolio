@@ -23,7 +23,13 @@ export async function getGithubContributions(
   try {
     const response = await fetch(
       `${CONTRIBUTIONS_API}/${encodeURIComponent(username)}?y=last`,
-      { next: { revalidate: 86_400 } },
+      {
+        next: { revalidate: 86_400 },
+        // The API is a free third-party service; if it stalls, render the
+        // page without the heatmap instead of hanging the build (Next.js
+        // gives up on a static page after 60s and fails the deploy).
+        signal: AbortSignal.timeout(8_000),
+      },
     );
     if (!response.ok) return null;
     const data = (await response.json()) as {
