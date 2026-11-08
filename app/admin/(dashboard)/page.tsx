@@ -20,7 +20,6 @@ export default async function AdminHomePage() {
       label: "Projects",
       hint: "Portfolio work",
       icon: SquareKanban,
-      tone: "bg-sky-500/10 text-sky-700 dark:text-sky-300",
       ...counts.projects,
     },
     {
@@ -28,7 +27,6 @@ export default async function AdminHomePage() {
       label: "Blogs",
       hint: "Writing",
       icon: Newspaper,
-      tone: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
       ...counts.posts,
     },
     {
@@ -36,7 +34,6 @@ export default async function AdminHomePage() {
       label: "Artworks",
       hint: "Gallery",
       icon: ImageIcon,
-      tone: "bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300",
       ...counts.artworks,
     },
     {
@@ -44,7 +41,6 @@ export default async function AdminHomePage() {
       label: "Books",
       hint: "Reading list",
       icon: BookOpen,
-      tone: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
       ...counts.books,
     },
   ];
@@ -52,7 +48,9 @@ export default async function AdminHomePage() {
   return (
     <div className="space-y-8">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+        <h1 className="metal-text font-display text-[2.1rem] leading-tight font-normal tracking-[-0.01em]">
+          Dashboard
+        </h1>
         <p className="text-muted-foreground text-sm">
           Drafts stay private until you publish.
         </p>
@@ -65,13 +63,12 @@ export default async function AdminHomePage() {
             <Link
               key={card.href}
               href={card.href}
-              className="border-border bg-card hover:bg-muted/40 group rounded-2xl border p-5 transition-colors"
+              className="metal-edge group rounded-2xl p-5 transition-colors hover:[--card:var(--muted)]"
             >
               <div className="flex items-start justify-between gap-3">
                 <div
                   className={cn(
-                    "flex size-9 items-center justify-center rounded-xl",
-                    card.tone,
+                    "metal-well text-foreground flex size-9 items-center justify-center rounded-xl",
                   )}
                 >
                   <card.icon className="size-4" />
@@ -100,7 +97,7 @@ export default async function AdminHomePage() {
 
       <Link
         href="/admin/settings"
-        className="border-border hover:bg-muted/40 inline-flex items-center gap-2 rounded-xl border px-4 py-3 text-sm transition-colors"
+        className="metal-edge inline-flex items-center gap-2 rounded-xl px-4 py-3 text-sm transition-colors hover:[--card:var(--muted)]"
       >
         <Settings className="size-4" />
         Edit homepage copy, socials, and tech stack

@@ -93,7 +93,7 @@ function AddCategoryForm({
   }
 
   return (
-    <div className="border-border bg-card space-y-3 rounded-2xl border p-4 sm:p-5">
+    <div className="metal-edge space-y-3 rounded-2xl p-4 sm:p-5">
       <h2 className="text-sm font-medium">New category</h2>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Input

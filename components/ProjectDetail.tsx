@@ -92,7 +92,7 @@ export function ProjectDetail({
       </Link>
 
       <header className="space-y-4">
-        <h1 className="font-display text-[2.4rem] leading-[1.1] font-normal tracking-[-0.01em] text-balance sm:text-5xl">
+        <h1 className="metal-text font-display text-[2.4rem] leading-[1.1] font-normal tracking-[-0.01em] text-balance sm:text-5xl">
           {project.title}
         </h1>
         <p className="text-muted-foreground text-lg leading-7 text-pretty">

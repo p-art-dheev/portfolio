@@ -22,7 +22,7 @@ export function Hero({ site }: { site: SiteContent }) {
               {/* Sized so the full name always stays on one line beside the
                   avatar and status; on narrower screens only "Hi, I'm" may
                   sit on the line above it. */}
-              <h1 className="font-display text-[2.6rem] leading-[1.05] font-normal tracking-[-0.01em] md:text-5xl lg:text-[3.5rem]">
+              <h1 className="metal-text font-display text-[2.6rem] leading-[1.05] font-normal tracking-[-0.01em] md:text-5xl lg:text-[3.5rem]">
                 Hi, I&apos;m{" "}
                 <span className="whitespace-nowrap">{SITE_NAME}</span>
               </h1>

@@ -64,7 +64,7 @@ export function ProjectForm({ project }: { project?: AdminProject }) {
       <Field label="Tags (comma separated)" htmlFor="tags">
         <Input id="tags" name="tags" defaultValue={project?.tags.join(", ")} />
       </Field>
-      <fieldset className="border-border space-y-4 rounded-2xl border p-4">
+      <fieldset className="metal-edge space-y-4 rounded-2xl p-4">
         <legend className="px-1 text-sm font-medium">Links</legend>
         <p className="text-muted-foreground -mt-1 text-xs">
           Leave a URL empty to hide its button on the card.
@@ -121,7 +121,7 @@ export function ProjectForm({ project }: { project?: AdminProject }) {
           </p>
         ) : null}
       </fieldset>
-      <fieldset className="border-border space-y-4 rounded-2xl border p-4">
+      <fieldset className="metal-edge space-y-4 rounded-2xl p-4">
         <legend className="px-1 text-sm font-medium">Case study</legend>
         <p className="text-muted-foreground -mt-1 text-xs">
           Shown on the project&apos;s own page. Empty fields are hidden. Use a

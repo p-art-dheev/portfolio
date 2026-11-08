@@ -26,7 +26,7 @@ export function SectionHeading({
         <p className="text-link font-mono text-[0.7rem] tracking-[0.2em] uppercase">
           {String(index).padStart(2, "0")} · {eyebrow}
         </p>
-        <h2 className="font-display text-[1.95rem] leading-[1.1] font-normal tracking-[-0.005em] sm:text-[2.2rem]">
+        <h2 className="metal-text font-display text-[1.95rem] leading-[1.1] font-normal tracking-[-0.005em] sm:text-[2.2rem]">
           {title}
         </h2>
       </div>

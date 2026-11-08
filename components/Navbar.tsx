@@ -93,7 +93,7 @@ export function Navbar({ domain }: { domain: string }) {
   }, [pathname, mounted]);
 
   return (
-    <header className="border-border/80 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-md">
+    <header className="metal-hairline bg-background/80 sticky top-0 z-40 border-b backdrop-blur-md">
       <Container className="flex h-14 items-center justify-between gap-4">
         <Link
           href="/"
@@ -112,7 +112,7 @@ export function Navbar({ domain }: { domain: string }) {
             <span
               aria-hidden
               className={cn(
-                "bg-link pointer-events-none absolute -bottom-3 h-0.5 rounded-full",
+                "bg-metal-bar pointer-events-none absolute -bottom-3 h-0.5 rounded-full",
                 indicator.animate &&
                   "transition-[left,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
               )}

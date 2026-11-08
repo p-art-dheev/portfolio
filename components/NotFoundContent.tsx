@@ -28,7 +28,7 @@ export function NotFoundContent() {
         404
       </p>
 
-      <h1 className="font-display mt-6 text-4xl font-normal tracking-[-0.01em] sm:text-5xl">
+      <h1 className="metal-text font-display mt-6 text-4xl font-normal tracking-[-0.01em] sm:text-5xl">
         This page wandered off
       </h1>
       <p className="text-muted-foreground mx-auto mt-3 max-w-md leading-7">

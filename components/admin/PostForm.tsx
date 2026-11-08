@@ -228,7 +228,7 @@ export function PostForm({
       </div>
 
       {tab === "preview" ? (
-        <div className="border-border rounded-2xl border p-4 sm:p-8">
+        <div className="metal-edge rounded-2xl p-4 sm:p-8">
           <p className="text-muted-foreground mb-6 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
             Preview of how readers will see this post. Nothing here is saved or
             counted.
@@ -318,7 +318,7 @@ export function PostForm({
           />
         </div>
 
-        <section className="border-border space-y-5 rounded-2xl border p-4 sm:p-5">
+        <section className="metal-edge space-y-5 rounded-2xl p-4 sm:p-5">
           <h2 className="text-sm font-medium">Details</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
