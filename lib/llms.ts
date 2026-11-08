@@ -49,6 +49,7 @@ export async function buildLlmsTxt() {
     `- [Resume (PDF)](${absoluteUrl(site.resume)})`,
     `- [GitHub](${site.socials.github})`,
     `- [LinkedIn](${site.socials.linkedin})`,
+    `- Discord: ${site.socials.discord}`,
     `- Email: ${site.socials.email.replace("@", " [at] ").replace(/\.(?=[^.]*$)/, " [dot] ")}`,
     "",
     "## Projects",

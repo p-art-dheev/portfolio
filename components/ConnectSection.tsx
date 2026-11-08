@@ -1,7 +1,8 @@
-import { Mail } from "lucide-react";
+import { Check, Mail } from "lucide-react";
 
 import type { SiteContent } from "@/lib/content-types";
-import { Github, Linkedin } from "@/components/icons";
+import { Discord, Github, Linkedin } from "@/components/icons";
+import { DiscordLink } from "@/components/DiscordLink";
 import { EmailLink } from "@/components/EmailLink";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -40,6 +41,22 @@ export function ConnectSection({
               Email
             </EmailLink>
           </Button>
+          {site.socials.discord ? (
+            <Button variant="outline" className={linkClass} asChild>
+              <DiscordLink
+                username={site.socials.discord}
+                copiedLabel={
+                  <>
+                    <Check className="text-link size-4" aria-hidden />
+                    Copied {site.socials.discord}
+                  </>
+                }
+              >
+                <Discord className="size-4" aria-hidden />
+                Discord
+              </DiscordLink>
+            </Button>
+          ) : null}
         </div>
       </section>
     </Reveal>

@@ -59,6 +59,10 @@ function parseSocials(value: unknown): SiteSocials {
       typeof record.linkedin === "string" ? record.linkedin : fallback.linkedin,
     github: typeof record.github === "string" ? record.github : fallback.github,
     email: typeof record.email === "string" ? record.email : fallback.email,
+    discord:
+      typeof record.discord === "string" && record.discord.trim()
+        ? record.discord.trim()
+        : fallback.discord,
   };
 }
 

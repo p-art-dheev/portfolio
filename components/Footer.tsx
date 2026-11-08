@@ -1,8 +1,9 @@
-import { Mail } from "lucide-react";
+import { Check, Mail } from "lucide-react";
 
 import type { SiteContent } from "@/lib/content-types";
 import { EmailLink } from "@/components/EmailLink";
-import { Github, Linkedin } from "@/components/icons";
+import { Discord, Github, Linkedin } from "@/components/icons";
+import { DiscordLink } from "@/components/DiscordLink";
 import { encodeEmail } from "@/lib/email";
 import { Container } from "@/components/Container";
 
@@ -48,6 +49,15 @@ export function Footer({ site }: { site: SiteContent }) {
           >
             <Mail className="size-4" />
           </EmailLink>
+          {site.socials.discord ? (
+            <DiscordLink
+              username={site.socials.discord}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              copiedLabel={<Check className="text-link size-4" aria-hidden />}
+            >
+              <Discord className="size-4" aria-hidden />
+            </DiscordLink>
+          ) : null}
         </div>
       </Container>
     </footer>

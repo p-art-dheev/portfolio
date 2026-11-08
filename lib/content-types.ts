@@ -36,6 +36,8 @@ export type SiteSocials = {
   linkedin: string;
   github: string;
   email: string;
+  /** Discord username (Discord has no public profile URL by name). */
+  discord: string;
 };
 
 export type SiteContent = {
