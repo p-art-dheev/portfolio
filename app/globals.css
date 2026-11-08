@@ -571,17 +571,20 @@ html[data-theme-switching] *::after {
 }
 
 /* Project banners are mounted on a paper mat so differently styled
-   screenshots read as one set; the print lifts off the mat on hover. */
+   screenshots read as one set; the print lifts off the mat on hover.
+   Radii are concentric: each layer's radius is the one around it minus the
+   gap between them (card 1.5rem - 0.5rem inset = mat 1rem - 0.5rem padding
+   = print 0.5rem), so the curves stay parallel. */
 .project-mat {
   display: block;
-  padding: 0.75rem;
+  padding: 0.5rem;
   border-radius: 1rem;
   background-color: var(--muted);
   box-shadow: inset 0 0 0 1px var(--border);
 }
 
 .project-print {
-  border-radius: 0.5625rem;
+  border-radius: 0.5rem;
   box-shadow:
     0 1px 2px rgb(0 0 0 / 0.12),
     0 10px 24px -14px rgb(0 0 0 / 0.45);
