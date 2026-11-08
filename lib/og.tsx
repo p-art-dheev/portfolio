@@ -18,7 +18,7 @@ export const OG_SIZE = { width: 1200, height: 630 };
 
 const INK = "#17191c";
 const MUTED = "#5b616a";
-const LINK = "#2e5488";
+const LINK = "#047857";
 const BORDER = "#d7dbe0";
 const MAT = "#eceef1";
 
